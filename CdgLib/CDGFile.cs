@@ -2,103 +2,100 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Xml.Schema;
 
 namespace CdgLib
 {
-    public class CDGFile : IDisposable
+    public class CdgFile : IDisposable
     {
-        private const int COLOUR_TABLE_SIZE = 16;
+        private const int ColourTableSize = 16;
 
         // To detect redundant calls
-        private bool disposedValue;
+        private bool _disposedValue;
 
-        #region " IDisposable Support "
-
-        // This code added by Visual Basic to correctly implement the disposable pattern.
         public void Dispose()
         {
-            // Do not change this code.  Put cleanup code in Dispose(ByVal disposing As Boolean) above.
+
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        #endregion
-
+ 
         // IDisposable
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    m_pStream.Close();
+                    _mPStream.Close();
                 }
-                m_pStream = null;
-                m_pSurface = null;
+                _mPStream = null;
+                _mPSurface = null;
             }
-            disposedValue = true;
+            _disposedValue = true;
         }
 
         #region "Constants"
 
         //CDG Command Code
 
-        private const byte CDG_COMMAND = 0x9;
+        private const byte CdgCommand = 0x9;
         //CDG Instruction Codes
-        private const int CDG_INST_MEMORY_PRESET = 1;
-        private const int CDG_INST_BORDER_PRESET = 2;
-        private const int CDG_INST_TILE_BLOCK = 6;
-        private const int CDG_INST_SCROLL_PRESET = 20;
-        private const int CDG_INST_SCROLL_COPY = 24;
-        private const int CDG_INST_DEF_TRANSP_COL = 28;
-        private const int CDG_INST_LOAD_COL_TBL_LO = 30;
-        private const int CDG_INST_LOAD_COL_TBL_HIGH = 31;
+        private const int CdgInstMemoryPreset = 1;
+        private const int CdgInstBorderPreset = 2;
+        private const int CdgInstTileBlock = 6;
+        private const int CdgInstScrollPreset = 20;
+        private const int CdgInstScrollCopy = 24;
+        private const int CdgInstDefTranspCol = 28;
+        private const int CdgInstLoadColTblLo = 30;
+        private const int CdgInstLoadColTblHigh = 31;
 
-        private const int CDG_INST_TILE_BLOCK_XOR = 38;
+        private const int CdgInstTileBlockXor = 38;
         //Bitmask for all CDG fields
-        private const byte CDG_MASK = 0x3f;
-        private const int CDG_PACKET_SIZE = 24;
-        private const int TILE_HEIGHT = 12;
+        private const byte CdgMask = 0x3f;
+        private const int CdgPacketSize = 24;
+        private const int TileHeight = 12;
 
-        private const int TILE_WIDTH = 6;
+        private const int TileWidth = 6;
         //This is the size of the display as defined by the CDG specification.
         //The pixels in this region can be painted, and scrolling operations
         //rotate through this number of pixels.
-        public const int CDG_FULL_WIDTH = 300;
+        public const int CdgFullWidth = 300;
 
-        public const int CDG_FULL_HEIGHT = 216;
+        public const int CdgFullHeight = 216;
         //This is the size of the screen that is actually intended to be
         //visible.  It is the center area of CDG_FULL.  
-        private const int CDG_DISPLAY_WIDTH = 294;
+        private const int CdgDisplayWidth = 294;
 
-        private const int CDG_DISPLAY_HEIGHT = 204;
+        private const int CdgDisplayHeight = 204;
 
         #endregion
 
         #region "Private Declarations"
 
-        private readonly byte[,] m_pixelColours = new byte[CDG_FULL_HEIGHT, CDG_FULL_WIDTH];
-        private readonly int[] m_colourTable = new int[COLOUR_TABLE_SIZE];
-        private int m_presetColourIndex;
-        private int m_borderColourIndex;
+        private readonly byte[,] _mPixelColours = new byte[CdgFullHeight, CdgFullWidth];
+        private readonly int[] _mColourTable = new int[ColourTableSize];
+        private int _mPresetColourIndex;
+        private int _mBorderColourIndex;
 
-        private int m_transparentColour;
-        private int m_hOffset;
+        private int _mTransparentColour;
+        private int _mHOffset;
 
-        private int m_vOffset;
-        private CdgFileIoStream m_pStream;
-        private ISurface m_pSurface;
-        private long m_positionMs;
+        private int _mVOffset;
+        private CdgFileIoStream _mPStream;
+        private Surface _mPSurface;
+        private long _mPositionMs;
 
-        private long m_duration;
+        private long _mDuration;
 
-        private Bitmap mImage;
+        private Bitmap _mImage;
 
         #endregion
 
         #region "Properties"
 
-        public bool Transparent { get; set; }
+        public bool Transparent => true;
 
         public Image RgbImage
         {
@@ -108,13 +105,13 @@ namespace CdgLib
                 try
                 {
                     var i = 0;
-                    for (var ri = 0; ri <= CDG_FULL_HEIGHT - 1; ri++)
+                    for (var ri = 0; ri <= CdgFullHeight - 1; ri++)
                     {
-                        for (var ci = 0; ci <= CDG_FULL_WIDTH - 1; ci++)
+                        for (var ci = 0; ci <= CdgFullWidth - 1; ci++)
                         {
-                            var ARGBInt = m_pSurface.rgbData[ri, ci];
+                            var argbInt = _mPSurface.RgbData[ri, ci];
                             var myByte = new byte[4];
-                            myByte = BitConverter.GetBytes(ARGBInt);
+                            myByte = BitConverter.GetBytes(argbInt);
                             temp.Write(myByte, 0, 4);
                         }
                     }
@@ -123,7 +120,7 @@ namespace CdgLib
                 {
                     //Do nothing (empty bitmap will be returned)
                 }
-                var myBitmap = GraphicUtil.StreamToBitmap(ref temp, CDG_FULL_WIDTH, CDG_FULL_HEIGHT);
+                var myBitmap = GraphicUtil.StreamToBitmap(ref temp, CdgFullWidth, CdgFullHeight);
                 if (Transparent)
                 {
                     myBitmap.MakeTransparent(myBitmap.GetPixel(1, 1));
@@ -143,59 +140,59 @@ namespace CdgLib
         }
 
         //New
-        public CDGFile(string cdgFileName)
+        public CdgFile(string cdgFileName)
         {
-            m_pStream = new CdgFileIoStream();
-            m_pStream.Open(cdgFileName);
-            m_pSurface = new ISurface();
-            if (m_pStream != null && m_pSurface != null)
+            _mPStream = new CdgFileIoStream();
+            _mPStream.Open(cdgFileName);
+            _mPSurface = new Surface();
+            if (_mPStream != null && _mPSurface != null)
             {
-                reset();
-                m_duration = m_pStream.Getsize() / CDG_PACKET_SIZE * 1000 / 300;
+                Reset();
+                _mDuration = _mPStream.Getsize()/CdgPacketSize*1000/300;
             }
         }
 
-        public long getTotalDuration()
+        public long GetTotalDuration()
         {
-            return m_duration;
+            return _mDuration;
         }
 
-        public bool renderAtPosition(long ms)
+        public bool RenderAtPosition(long ms)
         {
             var pack = new CdgPacket();
             long numPacks = 0;
             var res = true;
 
-            if (m_pStream == null)
+            if (_mPStream == null)
             {
                 return false;
             }
 
-            if (ms < m_positionMs)
+            if (ms < _mPositionMs)
             {
-                if (m_pStream.Seek(0, SeekOrigin.Begin) < 0)
+                if (_mPStream.Seek(0, SeekOrigin.Begin) < 0)
                     return false;
-                m_positionMs = 0;
+                _mPositionMs = 0;
             }
 
             //duration of one packet is 1/300 seconds (4 packets per sector, 75 sectors per second)
 
-            numPacks = ms - m_positionMs;
+            numPacks = ms - _mPositionMs;
             numPacks /= 10;
 
-            m_positionMs += numPacks * 10;
+            _mPositionMs += numPacks*10;
             numPacks *= 3;
 
             //TODO: double check logic due to inline while loop fucntionality
             //AndAlso m_pSurface.rgbData Is Nothing
             while (numPacks > 0)
             {
-                res = readPacket(ref pack);
-                processPacket(ref pack);
+                res = ReadPacket(ref pack);
+                ProcessPacket(ref pack);
                 numPacks -= 1;
             }
 
-            render();
+            Render();
             return res;
         }
 
@@ -203,97 +200,97 @@ namespace CdgLib
 
         #region "Private Methods"
 
-        private void reset()
+        private void Reset()
         {
-            Array.Clear(m_pixelColours, 0, m_pixelColours.Length);
-            Array.Clear(m_colourTable, 0, m_colourTable.Length);
+            Array.Clear(_mPixelColours, 0, _mPixelColours.Length);
+            Array.Clear(_mColourTable, 0, _mColourTable.Length);
 
-            m_presetColourIndex = 0;
-            m_borderColourIndex = 0;
-            m_transparentColour = 0;
-            m_hOffset = 0;
-            m_vOffset = 0;
+            _mPresetColourIndex = 0;
+            _mBorderColourIndex = 0;
+            _mTransparentColour = 0;
+            _mHOffset = 0;
+            _mVOffset = 0;
 
-            m_duration = 0;
-            m_positionMs = 0;
+            _mDuration = 0;
+            _mPositionMs = 0;
 
             //clear surface 
-            if (m_pSurface.rgbData != null)
+            if (_mPSurface.RgbData != null)
             {
-                Array.Clear(m_pSurface.rgbData, 0, m_pSurface.rgbData.Length);
+                Array.Clear(_mPSurface.RgbData, 0, _mPSurface.RgbData.Length);
             }
         }
 
-        private bool readPacket(ref CdgPacket pack)
+        private bool ReadPacket(ref CdgPacket pack)
         {
-            if (m_pStream == null || m_pStream.Eof())
+            if (_mPStream == null || _mPStream.Eof())
             {
                 return false;
             }
 
             var read = 0;
 
-            read += m_pStream.Read(ref pack.command, 1);
-            read += m_pStream.Read(ref pack.instruction, 1);
-            read += m_pStream.Read(ref pack.parityQ, 2);
-            read += m_pStream.Read(ref pack.data, 16);
-            read += m_pStream.Read(ref pack.parityP, 4);
+            read += _mPStream.Read(ref pack.Command, 1);
+            read += _mPStream.Read(ref pack.Instruction, 1);
+            read += _mPStream.Read(ref pack.ParityQ, 2);
+            read += _mPStream.Read(ref pack.Data, 16);
+            read += _mPStream.Read(ref pack.ParityP, 4);
 
             return read == 24;
         }
 
 
-        private void processPacket(ref CdgPacket pack)
+        private void ProcessPacket(ref CdgPacket pack)
         {
-            var inst_code = 0;
+            var instCode = 0;
 
-            if ((pack.command[0] & CDG_MASK) == CDG_COMMAND)
+            if ((pack.Command[0] & CdgMask) == CdgCommand)
             {
-                inst_code = pack.instruction[0] & CDG_MASK;
-                switch (inst_code)
+                instCode = pack.Instruction[0] & CdgMask;
+                switch (instCode)
                 {
-                    case CDG_INST_MEMORY_PRESET:
-                        memoryPreset(ref pack);
+                    case CdgInstMemoryPreset:
+                        MemoryPreset(ref pack);
 
 
                         break;
-                    case CDG_INST_BORDER_PRESET:
-                        borderPreset(ref pack);
+                    case CdgInstBorderPreset:
+                        BorderPreset(ref pack);
 
 
                         break;
-                    case CDG_INST_TILE_BLOCK:
-                        tileBlock(ref pack, false);
+                    case CdgInstTileBlock:
+                        TileBlock(ref pack, false);
 
 
                         break;
-                    case CDG_INST_SCROLL_PRESET:
-                        scroll(ref pack, false);
+                    case CdgInstScrollPreset:
+                        Scroll(ref pack, false);
 
 
                         break;
-                    case CDG_INST_SCROLL_COPY:
-                        scroll(ref pack, true);
+                    case CdgInstScrollCopy:
+                        Scroll(ref pack, true);
 
 
                         break;
-                    case CDG_INST_DEF_TRANSP_COL:
-                        defineTransparentColour(ref pack);
+                    case CdgInstDefTranspCol:
+                        DefineTransparentColour(ref pack);
 
 
                         break;
-                    case CDG_INST_LOAD_COL_TBL_LO:
-                        loadColorTable(ref pack, 0);
+                    case CdgInstLoadColTblLo:
+                        LoadColorTable(ref pack, 0);
 
 
                         break;
-                    case CDG_INST_LOAD_COL_TBL_HIGH:
-                        loadColorTable(ref pack, 1);
+                    case CdgInstLoadColTblHigh:
+                        LoadColorTable(ref pack, 1);
 
 
                         break;
-                    case CDG_INST_TILE_BLOCK_XOR:
-                        tileBlock(ref pack, true);
+                    case CdgInstTileBlockXor:
+                        TileBlock(ref pack, true);
 
 
                         break;
@@ -306,20 +303,20 @@ namespace CdgLib
         }
 
 
-        private void memoryPreset(ref CdgPacket pack)
+        private void MemoryPreset(ref CdgPacket pack)
         {
             var colour = 0;
             var ri = 0;
             var ci = 0;
             var repeat = 0;
 
-            colour = pack.data[0] & 0xf;
-            repeat = pack.data[1] & 0xf;
+            colour = pack.Data[0] & 0xf;
+            repeat = pack.Data[1] & 0xf;
 
             //Our new interpretation of CD+G Revealed is that memory preset
             //commands should also change the border
-            m_presetColourIndex = colour;
-            m_borderColourIndex = colour;
+            _mPresetColourIndex = colour;
+            _mBorderColourIndex = colour;
 
             //we have a reliable data stream, so the repeat command 
             //is executed only the first time
@@ -335,59 +332,59 @@ namespace CdgLib
                 //Set the preset colour for every pixel. Must be stored in 
                 //the pixel colour table indeces array
 
-                for (ri = 0; ri <= CDG_FULL_HEIGHT - 1; ri++)
+                for (ri = 0; ri <= CdgFullHeight - 1; ri++)
                 {
-                    for (ci = 0; ci <= CDG_FULL_WIDTH - 1; ci++)
+                    for (ci = 0; ci <= CdgFullWidth - 1; ci++)
                     {
-                        m_pixelColours[ri, ci] = (byte)colour;
+                        _mPixelColours[ri, ci] = (byte) colour;
                     }
                 }
             }
         }
 
 
-        private void borderPreset(ref CdgPacket pack)
+        private void BorderPreset(ref CdgPacket pack)
         {
             var colour = 0;
             var ri = 0;
             var ci = 0;
 
-            colour = pack.data[0] & 0xf;
-            m_borderColourIndex = colour;
+            colour = pack.Data[0] & 0xf;
+            _mBorderColourIndex = colour;
 
             //The border area is the area contained with a rectangle 
             //defined by (0,0,300,216) minus the interior pixels which are contained
             //within a rectangle defined by (6,12,294,204).
 
-            for (ri = 0; ri <= CDG_FULL_HEIGHT - 1; ri++)
+            for (ri = 0; ri <= CdgFullHeight - 1; ri++)
             {
                 for (ci = 0; ci <= 5; ci++)
                 {
-                    m_pixelColours[ri, ci] = (byte)colour;
+                    _mPixelColours[ri, ci] = (byte) colour;
                 }
 
-                for (ci = CDG_FULL_WIDTH - 6; ci <= CDG_FULL_WIDTH - 1; ci++)
+                for (ci = CdgFullWidth - 6; ci <= CdgFullWidth - 1; ci++)
                 {
-                    m_pixelColours[ri, ci] = (byte)colour;
+                    _mPixelColours[ri, ci] = (byte) colour;
                 }
             }
 
-            for (ci = 6; ci <= CDG_FULL_WIDTH - 7; ci++)
+            for (ci = 6; ci <= CdgFullWidth - 7; ci++)
             {
                 for (ri = 0; ri <= 11; ri++)
                 {
-                    m_pixelColours[ri, ci] = (byte)colour;
+                    _mPixelColours[ri, ci] = (byte) colour;
                 }
 
-                for (ri = CDG_FULL_HEIGHT - 12; ri <= CDG_FULL_HEIGHT - 1; ri++)
+                for (ri = CdgFullHeight - 12; ri <= CdgFullHeight - 1; ri++)
                 {
-                    m_pixelColours[ri, ci] = (byte)colour;
+                    _mPixelColours[ri, ci] = (byte) colour;
                 }
             }
         }
 
 
-        private void loadColorTable(ref CdgPacket pack, int table)
+        private void LoadColorTable(ref CdgPacket pack, int table)
         {
             for (var i = 0; i <= 7; i++)
             {
@@ -395,8 +392,8 @@ namespace CdgLib
                 //7 6 5 4 3 2 1 0     7 6 5 4 3 2 1 0
                 //X X r r r r g g     X X g g b b b b
 
-                var byte0 = pack.data[2 * i];
-                var byte1 = pack.data[2 * i + 1];
+                var byte0 = pack.Data[2*i];
+                var byte1 = pack.Data[2*i + 1];
                 var red = (byte0 & 0x3f) >> 2;
                 var green = ((byte0 & 0x3) << 2) | ((byte1 & 0x3f) >> 4);
                 var blue = byte1 & 0xf;
@@ -405,34 +402,34 @@ namespace CdgLib
                 green *= 17;
                 blue *= 17;
 
-                if (m_pSurface != null)
+                if (_mPSurface != null)
                 {
-                    m_colourTable[i + table * 8] = m_pSurface.MapRGBColour(red, green, blue);
+                    _mColourTable[i + table*8] = _mPSurface.MapRgbColour(red, green, blue);
                 }
             }
         }
 
 
-        private void tileBlock(ref CdgPacket pack, bool bXor)
+        private void TileBlock(ref CdgPacket pack, bool bXor)
         {
             var colour0 = 0;
             var colour1 = 0;
-            var column_index = 0;
-            var row_index = 0;
+            var columnIndex = 0;
+            var rowIndex = 0;
             var myByte = 0;
             var pixel = 0;
-            var xor_col = 0;
+            var xorCol = 0;
             var currentColourIndex = 0;
-            var new_col = 0;
+            var newCol = 0;
 
-            colour0 = pack.data[0] & 0xf;
-            colour1 = pack.data[1] & 0xf;
-            row_index = (pack.data[2] & 0x1f) * 12;
-            column_index = (pack.data[3] & 0x3f) * 6;
+            colour0 = pack.Data[0] & 0xf;
+            colour1 = pack.Data[1] & 0xf;
+            rowIndex = (pack.Data[2] & 0x1f)*12;
+            columnIndex = (pack.Data[3] & 0x3f)*6;
 
-            if (row_index > CDG_FULL_HEIGHT - TILE_HEIGHT)
+            if (rowIndex > CdgFullHeight - TileHeight)
                 return;
-            if (column_index > CDG_FULL_WIDTH - TILE_WIDTH)
+            if (columnIndex > CdgFullWidth - TileWidth)
                 return;
 
             //Set the pixel array for each of the pixels in the 12x6 tile.
@@ -443,7 +440,7 @@ namespace CdgLib
 
             for (var i = 0; i <= 11; i++)
             {
-                myByte = pack.data[4 + i] & 0x3f;
+                myByte = pack.Data[4 + i] & 0x3f;
                 for (var j = 0; j <= 5; j++)
                 {
                     pixel = (myByte >> (5 - j)) & 0x1;
@@ -452,44 +449,44 @@ namespace CdgLib
                         //Tile Block XOR 
                         if (pixel == 0)
                         {
-                            xor_col = colour0;
+                            xorCol = colour0;
                         }
                         else
                         {
-                            xor_col = colour1;
+                            xorCol = colour1;
                         }
 
                         //Get the colour index currently at this location, and xor with it 
-                        currentColourIndex = m_pixelColours[row_index + i, column_index + j];
-                        new_col = currentColourIndex ^ xor_col;
+                        currentColourIndex = _mPixelColours[rowIndex + i, columnIndex + j];
+                        newCol = currentColourIndex ^ xorCol;
                     }
                     else
                     {
                         if (pixel == 0)
                         {
-                            new_col = colour0;
+                            newCol = colour0;
                         }
                         else
                         {
-                            new_col = colour1;
+                            newCol = colour1;
                         }
                     }
 
                     //Set the pixel with the new colour. We set both the surfarray
                     //containing actual RGB values, as well as our array containing
                     //the colour indexes into our colour table. 
-                    m_pixelColours[row_index + i, column_index + j] = (byte)new_col;
+                    _mPixelColours[rowIndex + i, columnIndex + j] = (byte) newCol;
                 }
             }
         }
 
-        private void defineTransparentColour(ref CdgPacket pack)
+        private void DefineTransparentColour(ref CdgPacket pack)
         {
-            m_transparentColour = pack.data[0] & 0xf;
+            _mTransparentColour = pack.Data[0] & 0xf;
         }
 
 
-        private void scroll(ref CdgPacket pack, bool copy)
+        private void Scroll(ref CdgPacket pack, bool copy)
         {
             var colour = 0;
             var hScroll = 0;
@@ -502,9 +499,9 @@ namespace CdgLib
             var hScrollPixels = 0;
 
             //Decode the scroll command parameters
-            colour = pack.data[0] & 0xf;
-            hScroll = pack.data[1] & 0x3f;
-            vScroll = pack.data[2] & 0x3f;
+            colour = pack.Data[0] & 0xf;
+            hScroll = pack.Data[1] & 0x3f;
+            vScroll = pack.Data[2] & 0x3f;
 
             hSCmd = (hScroll & 0x30) >> 4;
             hOffset = hScroll & 0x7;
@@ -512,8 +509,8 @@ namespace CdgLib
             vOffset = vScroll & 0xf;
 
 
-            m_hOffset = hOffset < 5 ? hOffset : 5;
-            m_vOffset = vOffset < 11 ? vOffset : 11;
+            _mHOffset = hOffset < 5 ? hOffset : 5;
+            _mVOffset = vOffset < 11 ? vOffset : 11;
 
             //Scroll Vertical - Calculate number of pixels
 
@@ -546,19 +543,19 @@ namespace CdgLib
 
             //Perform the actual scroll.
 
-            var temp = new byte[CDG_FULL_HEIGHT + 1, CDG_FULL_WIDTH + 1];
-            var vInc = vScrollPixels + CDG_FULL_HEIGHT;
-            var hInc = hScrollPixels + CDG_FULL_WIDTH;
+            var temp = new byte[CdgFullHeight + 1, CdgFullWidth + 1];
+            var vInc = vScrollPixels + CdgFullHeight;
+            var hInc = hScrollPixels + CdgFullWidth;
             var ri = 0;
             //row index
             var ci = 0;
             //column index
 
-            for (ri = 0; ri <= CDG_FULL_HEIGHT - 1; ri++)
+            for (ri = 0; ri <= CdgFullHeight - 1; ri++)
             {
-                for (ci = 0; ci <= CDG_FULL_WIDTH - 1; ci++)
+                for (ci = 0; ci <= CdgFullWidth - 1; ci++)
                 {
-                    temp[(ri + vInc) % CDG_FULL_HEIGHT, (ci + hInc) % CDG_FULL_WIDTH] = m_pixelColours[ri, ci];
+                    temp[(ri + vInc)%CdgFullHeight, (ci + hInc)%CdgFullWidth] = _mPixelColours[ri, ci];
                 }
             }
 
@@ -571,21 +568,21 @@ namespace CdgLib
             {
                 if (vScrollPixels > 0)
                 {
-                    for (ci = 0; ci <= CDG_FULL_WIDTH - 1; ci++)
+                    for (ci = 0; ci <= CdgFullWidth - 1; ci++)
                     {
                         for (ri = 0; ri <= vScrollPixels - 1; ri++)
                         {
-                            temp[ri, ci] = (byte)colour;
+                            temp[ri, ci] = (byte) colour;
                         }
                     }
                 }
                 else if (vScrollPixels < 0)
                 {
-                    for (ci = 0; ci <= CDG_FULL_WIDTH - 1; ci++)
+                    for (ci = 0; ci <= CdgFullWidth - 1; ci++)
                     {
-                        for (ri = CDG_FULL_HEIGHT + vScrollPixels; ri <= CDG_FULL_HEIGHT - 1; ri++)
+                        for (ri = CdgFullHeight + vScrollPixels; ri <= CdgFullHeight - 1; ri++)
                         {
-                            temp[ri, ci] = (byte)colour;
+                            temp[ri, ci] = (byte) colour;
                         }
                     }
                 }
@@ -595,19 +592,19 @@ namespace CdgLib
                 {
                     for (ci = 0; ci <= hScrollPixels - 1; ci++)
                     {
-                        for (ri = 0; ri <= CDG_FULL_HEIGHT - 1; ri++)
+                        for (ri = 0; ri <= CdgFullHeight - 1; ri++)
                         {
-                            temp[ri, ci] = (byte)colour;
+                            temp[ri, ci] = (byte) colour;
                         }
                     }
                 }
                 else if (hScrollPixels < 0)
                 {
-                    for (ci = CDG_FULL_WIDTH + hScrollPixels; ci <= CDG_FULL_WIDTH - 1; ci++)
+                    for (ci = CdgFullWidth + hScrollPixels; ci <= CdgFullWidth - 1; ci++)
                     {
-                        for (ri = 0; ri <= CDG_FULL_HEIGHT - 1; ri++)
+                        for (ri = 0; ri <= CdgFullHeight - 1; ri++)
                         {
-                            temp[ri, ci] = (byte)colour;
+                            temp[ri, ci] = (byte) colour;
                         }
                     }
                 }
@@ -615,63 +612,37 @@ namespace CdgLib
 
             //Now copy the temporary buffer back to our array
 
-            for (ri = 0; ri <= CDG_FULL_HEIGHT - 1; ri++)
+            for (ri = 0; ri <= CdgFullHeight - 1; ri++)
             {
-                for (ci = 0; ci <= CDG_FULL_WIDTH - 1; ci++)
+                for (ci = 0; ci <= CdgFullWidth - 1; ci++)
                 {
-                    m_pixelColours[ri, ci] = temp[ri, ci];
+                    _mPixelColours[ri, ci] = temp[ri, ci];
                 }
             }
         }
 
 
-        private void render()
+        private void Render()
         {
-            if (m_pSurface == null)
+            if (_mPSurface == null)
                 return;
-            for (var ri = 0; ri <= CDG_FULL_HEIGHT - 1; ri++)
+            for (var ri = 0; ri <= CdgFullHeight - 1; ri++)
             {
-                for (var ci = 0; ci <= CDG_FULL_WIDTH - 1; ci++)
+                for (var ci = 0; ci <= CdgFullWidth - 1; ci++)
                 {
-                    if (ri < TILE_HEIGHT || ri >= CDG_FULL_HEIGHT - TILE_HEIGHT || ci < TILE_WIDTH ||
-                        ci >= CDG_FULL_WIDTH - TILE_WIDTH)
+                    if (ri < TileHeight || ri >= CdgFullHeight - TileHeight || ci < TileWidth ||
+                        ci >= CdgFullWidth - TileWidth)
                     {
-                        m_pSurface.rgbData[ri, ci] = m_colourTable[m_borderColourIndex];
+                        _mPSurface.RgbData[ri, ci] = _mColourTable[_mBorderColourIndex];
                     }
                     else
                     {
-                        m_pSurface.rgbData[ri, ci] = m_colourTable[m_pixelColours[ri + m_vOffset, ci + m_hOffset]];
+                        _mPSurface.RgbData[ri, ci] = _mColourTable[_mPixelColours[ri + _mVOffset, ci + _mHOffset]];
                     }
                 }
             }
         }
 
         #endregion
-    }
-}
-
-
-namespace CdgLib
-{
-    public class CdgPacket
-    {
-        public byte[] command = new byte[1];
-        public byte[] data = new byte[16];
-        public byte[] instruction = new byte[1];
-        public byte[] parityP = new byte[4];
-        public byte[] parityQ = new byte[2];
-    }
-}
-
-namespace CdgLib
-{
-    public class ISurface
-    {
-        public int[,] rgbData = new int[CDGFile.CDG_FULL_HEIGHT, CDGFile.CDG_FULL_WIDTH];
-
-        public int MapRGBColour(int red, int green, int blue)
-        {
-            return Color.FromArgb(red, green, blue).ToArgb();
-        }
     }
 }

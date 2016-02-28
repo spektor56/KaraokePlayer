@@ -1,33 +1,32 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using DexterLib;
+using DirectShowLib.DMO;
+using NReco.VideoConverter;
+
 namespace KaraokeConverter
 {
     public class MovieFrameExtractor
     {
-
         public static Bitmap GetBitmap(double position, string movieFileName, int width, int height)
         {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var ffProbe = new NReco.VideoInfo.FFProbe();
+            var mediaInfo = ffProbe.GetMediaInfo(movieFileName);
+            var videoDuration = (int)mediaInfo.Duration.TotalSeconds;
 
-            DexterLib.MediaDetClass det = new DexterLib.MediaDetClass();
-            det.Filename = movieFileName;
-            det.CurrentStream = 0;
-            double len = det.StreamLength;
-            if (position > len)
+            var ffMpeg = new FFMpegConverter();
+            using (var ms = new MemoryStream())
             {
-                return null;
+                ffMpeg.GetVideoThumbnail(movieFileName, ms, (float)position % videoDuration);
+                var bitmap = new Bitmap(ms);
+                stopWatch.Stop();
+                Debug.Print(stopWatch.ElapsedMilliseconds.ToString());
+                return bitmap;
             }
-
-            string myTempFile = System.IO.Path.GetTempFileName();
-            det.WriteBitmapBits(position, width, height, myTempFile);
-            Bitmap myBMP = null;
-            using (FileStream lStream = new FileStream(myTempFile, FileMode.Open, FileAccess.Read))
-            {
-                myBMP = (Bitmap)Image.FromStream(lStream);
-            }
-            System.IO.File.Delete(myTempFile);
-            return myBMP;
-
         }
-
     }
 }

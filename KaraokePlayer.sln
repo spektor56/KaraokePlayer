@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25008.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CdgLib", "CdgLib\CdgLib.csproj", "{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaraokePlayer", "KaraokePlayer\KaraokePlayer.csproj", "{2CF318E2-04B5-40FC-9577-6DAC62B86FB2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaraokeConverter", "KaraokeConverter\KaraokeConverter.csproj", "{2821C26D-52D8-43D9-BEF4-7CE4DFA60776}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CdgLib", "CdgLib\CdgLib.csproj", "{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +15,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2CF318E2-04B5-40FC-9577-6DAC62B86FB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2CF318E2-04B5-40FC-9577-6DAC62B86FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CF318E2-04B5-40FC-9577-6DAC62B86FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -23,10 +27,6 @@ Global
 		{2821C26D-52D8-43D9-BEF4-7CE4DFA60776}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2821C26D-52D8-43D9-BEF4-7CE4DFA60776}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2821C26D-52D8-43D9-BEF4-7CE4DFA60776}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

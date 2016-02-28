@@ -41,9 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CDGFile.cs" />
+    <Compile Include="CdgFile.cs" />
     <Compile Include="CdgFileIoStream.cs" />
+    <Compile Include="CdgPacket.cs" />
     <Compile Include="GraphicUtil.cs" />
+    <Compile Include="Surface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

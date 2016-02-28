@@ -2,7 +2,6 @@
 
 namespace CdgLib
 {
-  
     /// <summary>
     /// </summary>
     public class CdgFileIoStream
@@ -17,7 +16,7 @@ namespace CdgLib
         }
 
         /// <summary>
-        /// Reads the specified buf.
+        ///     Reads the specified buf.
         /// </summary>
         /// <param name="buf">The buf.</param>
         /// <param name="bufSize">The buf_size.</param>
@@ -28,7 +27,7 @@ namespace CdgLib
         }
 
         /// <summary>
-        /// Writes the specified buf.
+        ///     Writes the specified buf.
         /// </summary>
         /// <param name="buf">The buf.</param>
         /// <param name="bufSize">The buf_size.</param>
@@ -40,18 +39,18 @@ namespace CdgLib
         }
 
         /// <summary>
-        /// Seeks the specified offset.
+        ///     Seeks the specified offset.
         /// </summary>
         /// <param name="offset">The offset.</param>
         /// <param name="whence">The whence.</param>
         /// <returns></returns>
         public int Seek(int offset, SeekOrigin whence)
         {
-            return (int)_cdgFile.Seek(offset, whence);
+            return (int) _cdgFile.Seek(offset, whence);
         }
 
         /// <summary>
-        /// EOFs this instance.
+        ///     EOFs this instance.
         /// </summary>
         /// <returns></returns>
         public bool Eof()
@@ -60,16 +59,16 @@ namespace CdgLib
         }
 
         /// <summary>
-        /// Getsizes this instance.
+        ///     Getsizes this instance.
         /// </summary>
         /// <returns></returns>
         public int Getsize()
         {
-            return (int)_cdgFile.Length;
+            return (int) _cdgFile.Length;
         }
 
         /// <summary>
-        /// Opens the specified filename.
+        ///     Opens the specified filename.
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <returns></returns>
@@ -81,7 +80,7 @@ namespace CdgLib
         }
 
         /// <summary>
-        /// Closes this instance.
+        ///     Closes this instance.
         /// </summary>
         public void Close()
         {
@@ -93,4 +92,3 @@ namespace CdgLib
         }
     }
 }
-

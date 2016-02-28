@@ -17,10 +17,10 @@ namespace CdgLib
         /// <returns></returns>
         public static Stream BitmapToStream(string filename)
         {
-            var oldBmp = (Bitmap)Image.FromFile(filename);
+            var oldBmp = (Bitmap) Image.FromFile(filename);
             var oldData = oldBmp.LockBits(new Rectangle(0, 0, oldBmp.Width, oldBmp.Height), ImageLockMode.WriteOnly,
                 PixelFormat.Format24bppRgb);
-            var length = oldData.Stride * oldBmp.Height;
+            var length = oldData.Stride*oldBmp.Height;
             var stream = new byte[length];
             Marshal.Copy(oldData.Scan0, stream, 0, length);
             oldBmp.UnlockBits(oldData);
@@ -61,7 +61,7 @@ namespace CdgLib
         public static Bitmap GetCdgSizeBitmap(string filename)
         {
             var bm = new Bitmap(filename);
-            return ResizeBitmap(ref bm, CDGFile.CDG_FULL_WIDTH, CDGFile.CDG_FULL_HEIGHT);
+            return ResizeBitmap(ref bm, CdgFile.CdgFullWidth, CdgFile.CdgFullHeight);
         }
 
         /// <summary>

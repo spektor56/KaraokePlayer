@@ -1,25 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace KaraokePlayer
 {
-    class Unzip
+    internal class Unzip
     {
-
         public static string UnzipMP3GFiles(string zipFilename, string outputPath)
         {
             string functionReturnValue = null;
             functionReturnValue = "";
             try
             {
-                ICSharpCode.SharpZipLib.Zip.FastZip myZip = new ICSharpCode.SharpZipLib.Zip.FastZip();
+                var myZip = new FastZip();
                 myZip.ExtractZip(zipFilename, outputPath, "");
-                DirectoryInfo myDirInfo = new DirectoryInfo(outputPath);
-                FileInfo[] myFileInfo = myDirInfo.GetFiles("*.cdg", SearchOption.AllDirectories);
+                var myDirInfo = new DirectoryInfo(outputPath);
+                var myFileInfo = myDirInfo.GetFiles("*.cdg", SearchOption.AllDirectories);
                 if (myFileInfo.Length > 0)
                 {
                     functionReturnValue = myFileInfo[0].FullName;
@@ -30,6 +26,5 @@ namespace KaraokePlayer
             }
             return functionReturnValue;
         }
-
     }
 }

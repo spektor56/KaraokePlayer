@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tbFileName = new System.Windows.Forms.TextBox();
             this.btBrowseCDG = new System.Windows.Forms.Button();
             this.OpenFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -48,12 +49,17 @@
             this.GroupBox2 = new System.Windows.Forms.GroupBox();
             this.GroupBox1 = new System.Windows.Forms.GroupBox();
             this.pbAVI = new System.Windows.Forms.ProgressBar();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Panel2 = new System.Windows.Forms.Panel();
+            this.vlcVideo = new AxAXVLC.AxVLCPlugin2();
             this.SaveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.Panel1.SuspendLayout();
             this.GroupBox3.SuspendLayout();
             this.GroupBox2.SuspendLayout();
             this.GroupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.Panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.vlcVideo)).BeginInit();
             this.SuspendLayout();
             // 
             // tbFileName
@@ -63,6 +69,8 @@
             this.tbFileName.ReadOnly = true;
             this.tbFileName.Size = new System.Drawing.Size(475, 20);
             this.tbFileName.TabIndex = 0;
+            this.tbFileName.Text = "D:\\Karaoke\\SF001 - SF339 Sunfly Hits Karaoke Complete\\SF339\\SF339-01 - Kiesza - H" +
+    "ideaway.cdg";
             // 
             // btBrowseCDG
             // 
@@ -86,8 +94,9 @@
             this.Panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.Panel1.Location = new System.Drawing.Point(0, 0);
             this.Panel1.Name = "Panel1";
-            this.Panel1.Size = new System.Drawing.Size(577, 255);
+            this.Panel1.Size = new System.Drawing.Size(649, 255);
             this.Panel1.TabIndex = 3;
+            this.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel1_Paint);
             // 
             // GroupBox3
             // 
@@ -158,6 +167,7 @@
             this.tbBackGroundAVI.Name = "tbBackGroundAVI";
             this.tbBackGroundAVI.Size = new System.Drawing.Size(356, 20);
             this.tbBackGroundAVI.TabIndex = 17;
+            this.tbBackGroundAVI.Text = "C:\\Users\\l-bre\\Downloads\\Kristel\'s Jams\\drop.avi";
             // 
             // btBackGroundBrowse
             // 
@@ -185,6 +195,7 @@
             this.tbAVIFile.Name = "tbAVIFile";
             this.tbAVIFile.Size = new System.Drawing.Size(356, 20);
             this.tbAVIFile.TabIndex = 9;
+            this.tbAVIFile.Text = "C:\\Users\\l-bre\\Desktop\\tester.avi";
             // 
             // btOutputAVI
             // 
@@ -251,29 +262,53 @@
             this.pbAVI.Size = new System.Drawing.Size(555, 23);
             this.pbAVI.TabIndex = 14;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(207, 47);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(392, 151);
+            this.pictureBox1.TabIndex = 24;
+            this.pictureBox1.TabStop = false;
+            // 
             // Panel2
             // 
+            this.Panel2.Controls.Add(this.pictureBox1);
+            this.Panel2.Controls.Add(this.vlcVideo);
             this.Panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Panel2.Location = new System.Drawing.Point(0, 255);
             this.Panel2.Name = "Panel2";
-            this.Panel2.Size = new System.Drawing.Size(577, 0);
+            this.Panel2.Size = new System.Drawing.Size(649, 225);
             this.Panel2.TabIndex = 4;
+            this.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel2_Paint);
+            // 
+            // vlcVideo
+            // 
+            this.vlcVideo.Enabled = true;
+            this.vlcVideo.Location = new System.Drawing.Point(317, 47);
+            this.vlcVideo.Name = "vlcVideo";
+            this.vlcVideo.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("vlcVideo.OcxState")));
+            this.vlcVideo.Size = new System.Drawing.Size(320, 175);
+            this.vlcVideo.TabIndex = 25;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(577, 253);
+            this.ClientSize = new System.Drawing.Size(649, 480);
             this.Controls.Add(this.Panel2);
             this.Controls.Add(this.Panel1);
             this.Name = "Form1";
             this.Text = "MP3+CDG To Video Converter";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.Panel1.ResumeLayout(false);
             this.GroupBox3.ResumeLayout(false);
             this.GroupBox3.PerformLayout();
             this.GroupBox2.ResumeLayout(false);
             this.GroupBox2.PerformLayout();
             this.GroupBox1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.vlcVideo)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -309,6 +344,9 @@
 
 
         #endregion
+
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private AxAXVLC.AxVLCPlugin2 vlcVideo;
     }
 }
 

@@ -56,6 +56,8 @@
             this.tbFileName.ReadOnly = true;
             this.tbFileName.Size = new System.Drawing.Size(309, 20);
             this.tbFileName.TabIndex = 0;
+            this.tbFileName.Text = "D:\\Karaoke\\SF001 - SF339 Sunfly Hits Karaoke Complete\\SF339\\SF339-01 - Kiesza - H" +
+    "ideaway.cdg";
             // 
             // btBrowse
             // 

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using CdgLib;
 
@@ -18,14 +13,25 @@ namespace KaraokeConverter
         {
             InitializeComponent();
         }
+
+        #region "Events"
+
+        private void mExportAVI_Status(string message)
+        {
+            pbAVI.Value = Convert.ToInt32(message);
+        }
+
+        #endregion
+
         #region "Private Declarations"
 
-        private CDGFile mCDGFile;
+        private CdgFile mCDGFile;
         private CdgFileIoStream mCDGStream;
         private string mCDGFileName;
         private string mMP3FileName;
         private string mTempDir;
         private ExportAVI withEventsField_mExportAVI;
+
         private ExportAVI mExportAVI
         {
             get { return withEventsField_mExportAVI; }
@@ -41,28 +47,28 @@ namespace KaraokeConverter
                     withEventsField_mExportAVI.Status += mExportAVI_Status;
                 }
             }
-
         }
+
         #endregion
 
         #region "Control Events"
 
-        private void btOutputAVI_Click_1(System.Object sender, System.EventArgs e)
+        private void btOutputAVI_Click_1(object sender, EventArgs e)
         {
             SelectOutputAVI();
         }
 
-        private void btBackGroundBrowse_Click(System.Object sender, System.EventArgs e)
+        private void btBackGroundBrowse_Click(object sender, EventArgs e)
         {
             SelectBackGroundAVI();
         }
 
-        private void btConvert_Click(System.Object sender, System.EventArgs e)
+        private void btConvert_Click(object sender, EventArgs e)
         {
             ConvertAVI();
         }
 
-        private void tbFPS_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        private void tbFPS_KeyPress(object sender, KeyPressEventArgs e)
         {
             /*
 			if ((Strings.Asc(e.KeyChar) >= Keys.D0 & Strings.Asc(e.KeyChar) <= Keys.D9) | Strings.Asc(e.KeyChar) == Keys.Back | e.KeyChar == ".") {
@@ -73,14 +79,14 @@ namespace KaraokeConverter
             */
         }
 
-        private void btBrowseCDG_Click(System.Object sender, System.EventArgs e)
+        private void btBrowseCDG_Click(object sender, EventArgs e)
         {
             OpenFileDialog1.Filter = "CDG or Zip Files (*.zip, *.cdg)|*.zip;*.cdg";
             OpenFileDialog1.ShowDialog();
             tbFileName.Text = OpenFileDialog1.FileName;
         }
 
-        private void chkBackGraph_CheckedChanged(System.Object sender, System.EventArgs e)
+        private void chkBackGraph_CheckedChanged(object sender, EventArgs e)
         {
             if (chkBackGround.Checked && chkBackGraph.Checked)
             {
@@ -89,7 +95,7 @@ namespace KaraokeConverter
             ToggleCheckBox();
         }
 
-        private void chkBackGround_CheckedChanged(System.Object sender, System.EventArgs e)
+        private void chkBackGround_CheckedChanged(object sender, EventArgs e)
         {
             if (chkBackGraph.Checked && chkBackGround.Checked)
             {
@@ -98,18 +104,9 @@ namespace KaraokeConverter
             ToggleCheckBox();
         }
 
-        private void btBrowseImg_Click(System.Object sender, System.EventArgs e)
+        private void btBrowseImg_Click(object sender, EventArgs e)
         {
             SelectBackGroundGraphic();
-        }
-
-        #endregion
-
-        #region "Events"
-
-        private void mExportAVI_Status(string message)
-        {
-            pbAVI.Value = (Convert.ToInt32(message));
         }
 
         #endregion
@@ -154,12 +151,13 @@ namespace KaraokeConverter
             }
             mExportAVI = new ExportAVI();
             pbAVI.Value = 0;
-            string backGroundFilename = "";
+            var backGroundFilename = "";
             if (chkBackGraph.Checked)
                 backGroundFilename = tbBackGroundImg.Text;
             if (chkBackGround.Checked)
                 backGroundFilename = tbBackGroundAVI.Text;
-            mExportAVI.CDGtoAVI(tbAVIFile.Text, mCDGFileName, mMP3FileName, Convert.ToDouble(tbFPS.Text), backGroundFilename);
+            mExportAVI.CDGtoAVI(tbAVIFile.Text, mCDGFileName, mMP3FileName, Convert.ToDouble(tbFPS.Text),
+                backGroundFilename);
             pbAVI.Value = 0;
             try
             {
@@ -188,14 +186,13 @@ namespace KaraokeConverter
 
         private void PreProcessFiles()
         {
-            /*
+            
 			string myCDGFileName = "";
 			if (Regex.IsMatch(tbFileName.Text, "\\.zip$")) {
 				string myTempDir = Path.GetTempPath() + Path.GetRandomFileName();
 				Directory.CreateDirectory(myTempDir);
 				mTempDir = myTempDir;
 				myCDGFileName = Unzip.UnzipMP3GFiles(tbFileName.Text, myTempDir);
-				goto PairUpFiles;
 			} else if (Regex.IsMatch(tbFileName.Text, "\\.cdg$")) {
 				myCDGFileName = tbFileName.Text;
 				PairUpFiles:
@@ -206,7 +203,7 @@ namespace KaraokeConverter
 					mTempDir = "";
 				}
 			}
-            */
+            
         }
 
 
@@ -220,5 +217,26 @@ namespace KaraokeConverter
 
         #endregion
 
+        private void Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void Panel2_Paint(object sender, PaintEventArgs e)
+        {
+            
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+         
+
+
+            var file = new Uri(@"D:\HDMovies\28 Weeks Later (2007)\28.Weeks.Later.2007.720p.BrRip.264.YIFY.mp4");
+            vlcVideo.playlist.add(file.AbsoluteUri);
+            vlcVideo.playlist.play();
+
+
+        }
     }
 }

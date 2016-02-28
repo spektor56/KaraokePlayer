@@ -1,34 +1,33 @@
-﻿using AviFile;
-using CdgLib;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using AviFile;
+using CdgLib;
 
 namespace KaraokeConverter
 {
     public class ExportAVI
     {
+        public delegate void StatusEventHandler(string message);
 
 
-        public void CDGtoAVI(string aviFileName, string cdgFileName, string mp3FileName, double frameRate, string backgroundFileName = "")
+        public void CDGtoAVI(string aviFileName, string cdgFileName, string mp3FileName, double frameRate,
+            string backgroundFileName = "")
         {
             Bitmap backgroundBmp = null;
             Bitmap mergedBMP = null;
             VideoStream aviStream = null;
-            CDGFile myCDGFile = new CDGFile(cdgFileName);
-            myCDGFile.renderAtPosition(0);
-            Bitmap bitmap__1 = (Bitmap)myCDGFile.RgbImage;
+            var myCDGFile = new CdgFile(cdgFileName);
+            myCDGFile.RenderAtPosition(0);
+            var bitmap__1 = (Bitmap) myCDGFile.RgbImage;
             if (!string.IsNullOrEmpty(backgroundFileName))
             {
                 try
                 {
                     if (IsMovie(backgroundFileName))
-                        backgroundBmp = MovieFrameExtractor.GetBitmap(0, backgroundFileName, CDGFile.CDG_FULL_WIDTH, CDGFile.CDG_FULL_HEIGHT);
+                        backgroundBmp = MovieFrameExtractor.GetBitmap(0, backgroundFileName, CdgFile.CdgFullWidth,
+                            CdgFile.CdgFullHeight);
                     if (IsGraphic(backgroundFileName))
                         backgroundBmp = GraphicUtil.GetCdgSizeBitmap(backgroundFileName);
                 }
@@ -36,7 +35,7 @@ namespace KaraokeConverter
                 {
                 }
             }
-            AviManager aviManager = new AviManager(aviFileName, false);
+            var aviManager = new AviManager(aviFileName, false);
             if (backgroundBmp != null)
             {
                 mergedBMP = GraphicUtil.MergeImagesWithTransparency(backgroundBmp, bitmap__1);
@@ -45,24 +44,26 @@ namespace KaraokeConverter
                 if (IsMovie(backgroundFileName))
                     backgroundBmp.Dispose();
             }
-            else {
+            else
+            {
                 aviStream = aviManager.AddVideoStream(true, frameRate, bitmap__1);
             }
 
-            int count = 0;
-            double frameInterval = 1000 / frameRate;
-            long totalDuration = myCDGFile.getTotalDuration();
+            var count = 0;
+            var frameInterval = 1000/frameRate;
+            var totalDuration = myCDGFile.GetTotalDuration();
             double position = 0;
             while (position <= totalDuration)
             {
                 count += 1;
-                position = count * frameInterval;
-                myCDGFile.renderAtPosition(Convert.ToInt64(position));
-                bitmap__1 = (Bitmap)myCDGFile.RgbImage;
+                position = count*frameInterval;
+                myCDGFile.RenderAtPosition(Convert.ToInt64(position));
+                bitmap__1 = (Bitmap) myCDGFile.RgbImage;
                 if (!string.IsNullOrEmpty(backgroundFileName))
                 {
                     if (IsMovie(backgroundFileName))
-                        backgroundBmp = MovieFrameExtractor.GetBitmap(position / 1000, backgroundFileName, CDGFile.CDG_FULL_WIDTH, CDGFile.CDG_FULL_HEIGHT);
+                        backgroundBmp = MovieFrameExtractor.GetBitmap(position/1000, backgroundFileName,
+                            CdgFile.CdgFullWidth, CdgFile.CdgFullHeight);
                 }
                 if (backgroundBmp != null)
                 {
@@ -72,11 +73,12 @@ namespace KaraokeConverter
                     if (IsMovie(backgroundFileName))
                         backgroundBmp.Dispose();
                 }
-                else {
+                else
+                {
                     aviStream.AddFrame(bitmap__1);
                 }
                 bitmap__1.Dispose();
-                int percentageDone = (int)((position / totalDuration) * 100);
+                var percentageDone = (int) (position/totalDuration*100);
                 if (Status != null)
                 {
                     Status(percentageDone.ToString());
@@ -119,12 +121,10 @@ namespace KaraokeConverter
 
         public static bool IsGraphic(string filename)
         {
-            return Regex.IsMatch(filename, "^.+(\\.jpg|\\.bmp|\\.png|\\.tif|\\.tiff|\\.gif|\\.wmf)$", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(filename, "^.+(\\.jpg|\\.bmp|\\.png|\\.tif|\\.tiff|\\.gif|\\.wmf)$",
+                RegexOptions.IgnoreCase);
         }
 
         public event StatusEventHandler Status;
-        public delegate void StatusEventHandler(string message);
-
-
     }
 }
