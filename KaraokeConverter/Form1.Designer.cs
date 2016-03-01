@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tbFileName = new System.Windows.Forms.TextBox();
             this.btBrowseCDG = new System.Windows.Forms.Button();
             this.OpenFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -51,15 +50,15 @@
             this.pbAVI = new System.Windows.Forms.ProgressBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Panel2 = new System.Windows.Forms.Panel();
-            this.vlcVideo = new AxAXVLC.AxVLCPlugin2();
             this.SaveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.vlcControl1 = new Vlc.DotNet.Forms.VlcControl();
             this.Panel1.SuspendLayout();
             this.GroupBox3.SuspendLayout();
             this.GroupBox2.SuspendLayout();
             this.GroupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.Panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vlcVideo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vlcControl1)).BeginInit();
             this.SuspendLayout();
             // 
             // tbFileName
@@ -272,8 +271,8 @@
             // 
             // Panel2
             // 
+            this.Panel2.Controls.Add(this.vlcControl1);
             this.Panel2.Controls.Add(this.pictureBox1);
-            this.Panel2.Controls.Add(this.vlcVideo);
             this.Panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Panel2.Location = new System.Drawing.Point(0, 255);
             this.Panel2.Name = "Panel2";
@@ -281,14 +280,19 @@
             this.Panel2.TabIndex = 4;
             this.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel2_Paint);
             // 
-            // vlcVideo
+            // vlcControl1
             // 
-            this.vlcVideo.Enabled = true;
-            this.vlcVideo.Location = new System.Drawing.Point(317, 47);
-            this.vlcVideo.Name = "vlcVideo";
-            this.vlcVideo.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("vlcVideo.OcxState")));
-            this.vlcVideo.Size = new System.Drawing.Size(320, 175);
-            this.vlcVideo.TabIndex = 25;
+            this.vlcControl1.BackColor = System.Drawing.Color.Black;
+            this.vlcControl1.Location = new System.Drawing.Point(411, 18);
+            this.vlcControl1.Name = "vlcControl1";
+            this.vlcControl1.Size = new System.Drawing.Size(75, 23);
+            this.vlcControl1.Spu = -1;
+            this.vlcControl1.TabIndex = 25;
+            this.vlcControl1.Text = "vlcControl1";
+            this.vlcControl1.VlcLibDirectory = null;
+            this.vlcControl1.VlcMediaplayerOptions = new string[] {
+        "--projectm-preset-path=\"C:\\Program Files\\VideoLAN\\VLC\\visualizations\\presets_milk" +
+            "drop\""};
             // 
             // Form1
             // 
@@ -308,7 +312,7 @@
             this.GroupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.vlcVideo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vlcControl1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -346,7 +350,7 @@
         #endregion
 
         private System.Windows.Forms.PictureBox pictureBox1;
-        private AxAXVLC.AxVLCPlugin2 vlcVideo;
+        private Vlc.DotNet.Forms.VlcControl vlcControl1;
     }
 }
 

@@ -232,11 +232,6 @@ namespace KaraokeConverter
          
 
 
-            var file = new Uri(@"D:\HDMovies\28 Weeks Later (2007)\28.Weeks.Later.2007.720p.BrRip.264.YIFY.mp4");
-            vlcVideo.playlist.add(file.AbsoluteUri);
-            vlcVideo.playlist.play();
-
-
         }
     }
 }
