@@ -75,7 +75,7 @@ namespace CdgLib
         public bool Open(string filename)
         {
             Close();
-            _cdgFile = new FileStream(filename, FileMode.Open);
+            _cdgFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
             return _cdgFile != null;
         }
 

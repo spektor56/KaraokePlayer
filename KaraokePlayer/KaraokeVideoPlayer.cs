@@ -22,20 +22,19 @@ namespace KaraokePlayer
         public KaraokeVideoPlayer()
         {
             InitializeComponent();
-            _lyricTimer.Interval = 30;
+            _lyricTimer.Interval = 50;
             _lyricTimer.Elapsed += LyricTimerOnElapsed;
         }
 
         private async void LyricTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            System.Diagnostics.Debug.Print(DateTime.Now.Millisecond.ToString());
+            System.Diagnostics.Debug.Print((DateTime.Now - _startTime).TotalMilliseconds.ToString());
             if (vlcPlayer.IsPlaying)
             {
-                await Task.Run(() =>
-                {
-                    _cdgFile.RenderAtPosition(
+                
+                     await _cdgFile.RenderAtPosition(
                         (long)(DateTime.Now - _startTime).TotalMilliseconds);
-                });
+                
 
 
                 Invoke((MethodInvoker)(() =>
@@ -53,7 +52,7 @@ namespace KaraokePlayer
         public void Play(Uri file)
         {
             vlcPlayer.SetMedia(file);
-            _cdgFile = new CdgFile(Path.ChangeExtension(file.LocalPath, "cdg"));
+            _cdgFile = new CdgFile(Path.ChangeExtension(file.LocalPath, "cdg"), FileMode.Open, FileAccess.Read);
             vlcPlayer.Play();
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using AviFile;
@@ -18,7 +19,7 @@ namespace KaraokeConverter
             Bitmap backgroundBmp = null;
             Bitmap mergedBMP = null;
             VideoStream aviStream = null;
-            var myCDGFile = new CdgFile(cdgFileName);
+            var myCDGFile = new CdgFile(cdgFileName, FileMode.Open, FileAccess.Read);
             myCDGFile.RenderAtPosition(0);
             var bitmap__1 = (Bitmap) myCDGFile.RgbImage;
             if (!string.IsNullOrEmpty(backgroundFileName))

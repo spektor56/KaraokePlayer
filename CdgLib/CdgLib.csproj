@@ -44,7 +44,7 @@
   <ItemGroup>
     <Compile Include="CdgFile.cs" />
     <Compile Include="CdgFileIoStream.cs" />
-    <Compile Include="CdgPacket.cs" />
+    <Compile Include="SubCodePacket.cs" />
     <Compile Include="GraphicUtil.cs" />
     <Compile Include="Surface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
