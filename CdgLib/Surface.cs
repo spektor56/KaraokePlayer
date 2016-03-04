@@ -4,7 +4,7 @@ namespace CdgLib
 {
     public class Surface
     {
-        public int[,] RgbData = new int[CdgFile.CdgFullHeight, CdgFile.CdgFullWidth];
+        public int[,] RgbData = new int[CdgFile.FullHeight, CdgFile.FullWidth];
 
         public int MapRgbColour(int red, int green, int blue)
         {

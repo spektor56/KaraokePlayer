@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -19,35 +21,19 @@ namespace KaraokePlayer
         private OverlayForm _overlayForm;
         private DateTime _startTime;
         private readonly System.Timers.Timer _lyricTimer = new System.Timers.Timer();
+        private Stopwatch _stopwatch = new Stopwatch();
 
         public KaraokeVideoPlayer()
         {
             InitializeComponent();
-            _lyricTimer.Interval = 50;
+            _lyricTimer.Interval = 500;
             _lyricTimer.Elapsed += LyricTimerOnElapsed;
         }
 
         private async void LyricTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            System.Diagnostics.Debug.Print((DateTime.Now - _startTime).TotalMilliseconds.ToString());
-            if (vlcPlayer.IsPlaying)
-            {
-                
-                     await _cdgFile.RenderAtPosition(
-                        (long)(DateTime.Now - _startTime).TotalMilliseconds);
-                
+            
 
-
-                Invoke((MethodInvoker)(() =>
-                {
-                    _lyrics.Image = _cdgFile.RgbImage;
-                    _lyrics.BackColor = ((Bitmap)_cdgFile.RgbImage).GetPixel(1, 1);
-                }));
-            }
-            else
-            {
-                this.Enabled = false;
-            }
         }
 
         public void Play(Uri file)
@@ -57,10 +43,24 @@ namespace KaraokePlayer
             vlcPlayer.Play();
         }
 
-        private void vlcPlayer_Playing(object sender, VlcMediaPlayerPlayingEventArgs e)
+        private async void vlcPlayer_Playing(object sender, VlcMediaPlayerPlayingEventArgs e)
         {
             _startTime = DateTime.Now;
             _lyricTimer.Start();
+
+            while (vlcPlayer.IsPlaying)
+            {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var picture = await _cdgFile.Render((long) (DateTime.Now - _startTime).TotalMilliseconds);
+                stopwatch.Reset();
+                Debug.Print(stopwatch.ElapsedMilliseconds.ToString());
+
+
+                    _lyrics.Image = picture;
+
+          
+            }
         }
 
         private void vlcPlayer_TimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
@@ -84,7 +84,7 @@ namespace KaraokePlayer
 
         private void vlcPlayer_VlcLibDirectoryNeeded(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
         {
-            e.VlcLibDirectory = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"lib\vlc\"));
+            e.VlcLibDirectory = new DirectoryInfo(@"lib\vlc\");
         }
     }
 }

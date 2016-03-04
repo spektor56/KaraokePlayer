@@ -36,7 +36,7 @@ namespace CdgLib
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <returns></returns>
-        public static Bitmap StreamToBitmap(ref Stream stream, int width, int height)
+        public static Bitmap StreamToBitmap(Stream stream, int width, int height)
         {
             //create a new bitmap
             var bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
@@ -61,7 +61,7 @@ namespace CdgLib
         public static Bitmap GetCdgSizeBitmap(string filename)
         {
             var bm = new Bitmap(filename);
-            return ResizeBitmap(ref bm, CdgFile.CdgFullWidth, CdgFile.CdgFullHeight);
+            return ResizeBitmap(ref bm, CdgFile.FullWidth, CdgFile.FullHeight);
         }
 
         /// <summary>

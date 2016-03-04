@@ -27,8 +27,8 @@ namespace KaraokeConverter
                 try
                 {
                     if (IsMovie(backgroundFileName))
-                        backgroundBmp = MovieFrameExtractor.GetBitmap(0, backgroundFileName, CdgFile.CdgFullWidth,
-                            CdgFile.CdgFullHeight);
+                        backgroundBmp = MovieFrameExtractor.GetBitmap(0, backgroundFileName, CdgFile.FullWidth,
+                            CdgFile.FullHeight);
                     if (IsGraphic(backgroundFileName))
                         backgroundBmp = GraphicUtil.GetCdgSizeBitmap(backgroundFileName);
                 }
@@ -64,7 +64,7 @@ namespace KaraokeConverter
                 {
                     if (IsMovie(backgroundFileName))
                         backgroundBmp = MovieFrameExtractor.GetBitmap(position/1000, backgroundFileName,
-                            CdgFile.CdgFullWidth, CdgFile.CdgFullHeight);
+                            CdgFile.FullWidth, CdgFile.FullHeight);
                 }
                 if (backgroundBmp != null)
                 {
