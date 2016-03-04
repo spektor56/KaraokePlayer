@@ -19,7 +19,7 @@ namespace KaraokeConverter
             Bitmap backgroundBmp = null;
             Bitmap mergedBMP = null;
             VideoStream aviStream = null;
-            var myCDGFile = new CdgFile(cdgFileName, FileMode.Open, FileAccess.Read);
+            var myCDGFile = new GraphicsFile(cdgFileName, FileMode.Open, FileAccess.Read);
             myCDGFile.RenderAtPosition(0);
             var bitmap__1 = (Bitmap) myCDGFile.RgbImage;
             if (!string.IsNullOrEmpty(backgroundFileName))
@@ -27,8 +27,8 @@ namespace KaraokeConverter
                 try
                 {
                     if (IsMovie(backgroundFileName))
-                        backgroundBmp = MovieFrameExtractor.GetBitmap(0, backgroundFileName, CdgFile.FullWidth,
-                            CdgFile.FullHeight);
+                        backgroundBmp = MovieFrameExtractor.GetBitmap(0, backgroundFileName, GraphicsFile.FullWidth,
+                            GraphicsFile.FullHeight);
                     if (IsGraphic(backgroundFileName))
                         backgroundBmp = GraphicUtil.GetCdgSizeBitmap(backgroundFileName);
                 }
@@ -64,7 +64,7 @@ namespace KaraokeConverter
                 {
                     if (IsMovie(backgroundFileName))
                         backgroundBmp = MovieFrameExtractor.GetBitmap(position/1000, backgroundFileName,
-                            CdgFile.FullWidth, CdgFile.FullHeight);
+                            GraphicsFile.FullWidth, GraphicsFile.FullHeight);
                 }
                 if (backgroundBmp != null)
                 {

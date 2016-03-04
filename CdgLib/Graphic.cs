@@ -1,80 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using CdgLib.SubCode;
 
 namespace CdgLib
 {
-    public class CdgFile : FileStream
+    public class Graphic
     {
-        private const int ColourTableSize = 16;
-        private const byte CdgCommand = 0x9;
-        private const int CdgInstMemoryPreset = 1;
-        private const int CdgInstBorderPreset = 2;
-        private const int CdgInstTileBlock = 6;
-        private const int CdgInstScrollPreset = 20;
-        private const int CdgInstScrollCopy = 24;
-        private const int CdgInstDefTranspCol = 28;
-        private const int CdgInstLoadColTblLo = 30;
-        private const int CdgInstLoadColTblHigh = 31;
-        private const int CdgInstTileBlockXor = 38;
-        private const byte CdgMask = 0x3f;
-        private const int CdgPacketSize = 24;
-        private const int TileHeight = 12;
-        private const int TileWidth = 6;
-        public const int FullWidth = 300;
-        public const int FullHeight = 216;
-        private const int CdgDisplayWidth = 294;
-        private const int CdgDisplayHeight = 204;
-        private readonly int[] _mColourTable = new int[ColourTableSize];
-        private readonly byte[,] _mPixelColours = new byte[FullHeight, FullWidth];
+        private int _mPresetColourIndex;
         private int _mBorderColourIndex;
+
         private long _mDuration;
         private int _mHOffset;
         private Bitmap _mImage;
-        private int _mPresetColourIndex;
+
         private CdgFileIoStream _mPStream;
         private readonly Surface _mPSurface;
         private int _mTransparentColour;
         private int _mVOffset;
-        private long _previousPosition;
 
-        public CdgFile(string path, FileMode mode, FileAccess fileAccess) : base(path, mode, fileAccess, FileShare.Read)
+        private const byte Command = 0x9;
+        private const byte CdgMask = 0x3f;
+        private const int CdgDisplayWidth = 294;
+        private const int CdgDisplayHeight = 204;
+        private int[,] _graphicData;
+        public Graphic(IEnumerable<Packet> packets)
         {
-            _mPSurface = new Surface();
+            
         }
 
-        public bool Transparent => true;
-
-        public long Duration => Length/CdgPacketSize*1000/300;
-
-        public async Task<Bitmap> Render(long position = -1)
+        public Bitmap ToBitmap()
         {
-            if (position < 0)
-            {
-                position = _previousPosition + CdgPacketSize;
-            }
-
-            if (position < _previousPosition)
-            {
-                Reset();
-            }
-
-            //duration of one packet is 1/300 seconds (4 packets per sector, 75 sectors per second)
-            //p=t*3/10  t=p*10/3 t=milliseconds, p=packets
-            var timeToRender = position - _previousPosition;
-            _previousPosition += timeToRender;
-            var numberOfSubCodePackets = timeToRender*3/10;
-      
-            var subCodePackets = await ReadSubCodeAsync(numberOfSubCodePackets);
-            foreach (var subCodePacket in subCodePackets)
-            {
-                ProcessPacket(subCodePacket);
-            }
-            
-            RenderSurface();
             Bitmap myBitmap;
             using (var bitmapStream = new MemoryStream())
             {
@@ -85,95 +45,50 @@ namespace CdgLib
                 }
                 myBitmap = GraphicUtil.StreamToBitmap(bitmapStream, FullWidth, FullHeight);
             }
-
-            if (Transparent)
-            {
-                myBitmap.MakeTransparent(myBitmap.GetPixel(1, 1));
-            }
+            myBitmap.MakeTransparent(myBitmap.GetPixel(1, 1));
+    
             return myBitmap;
-
-        }
-
-        private void Reset()
-        {
-            Position = 0;
-            Array.Clear(_mPixelColours, 0, _mPixelColours.Length);
-            Array.Clear(_mColourTable, 0, _mColourTable.Length);
-
-            _mPresetColourIndex = 0;
-            _mBorderColourIndex = 0;
-            _mTransparentColour = 0;
-            _mHOffset = 0;
-            _mVOffset = 0;
-
-            _mDuration = 0;
-            _previousPosition = 0;
-
-            //clear surface 
-            if (_mPSurface.RgbData != null)
-            {
-                Array.Clear(_mPSurface.RgbData, 0, _mPSurface.RgbData.Length);
-            }
-        }
-
-        private async Task<IEnumerable<SubCodePacket>> ReadSubCodeAsync(long numberOfPackets)
-        {
-            var subCodePackets = new List<SubCodePacket>();
-            var buffer = new byte[CdgPacketSize*numberOfPackets];
-            var bytesRead = await ReadAsync(buffer, 0, buffer.Length);
-
-            for (var i = 0; i < bytesRead/CdgPacketSize; i++)
-            {
-                var subCodePacket = new SubCodePacket();
-                Array.Copy(buffer, i*CdgPacketSize + 0, subCodePacket.Command, 0, 1);
-                Array.Copy(buffer, i*CdgPacketSize + 1, subCodePacket.Instruction, 0, 1);
-                Array.Copy(buffer, i*CdgPacketSize + 2, subCodePacket.ParityQ, 0, 2);
-                Array.Copy(buffer, i*CdgPacketSize + 4, subCodePacket.Data, 0, 16);
-                Array.Copy(buffer, i*CdgPacketSize + 20, subCodePacket.ParityP, 0, 4);
-                subCodePackets.Add(subCodePacket);
-            }
-            return subCodePackets;
         }
 
 
-        private void ProcessPacket(SubCodePacket subCodePacketPacket)
+        private void ProcessPacket(Packet packetPacket)
         {
-            if ((subCodePacketPacket.Command[0] & CdgMask) != CdgCommand) return;
-            var instructionCode = subCodePacketPacket.Instruction[0] & CdgMask;
+            if ((packetPacket.Command[0] & CdgMask) != Command) return;
+            var instructionCode = (Instruction)(packetPacket.Instruction[0] & CdgMask);
             switch (instructionCode)
             {
-                case CdgInstMemoryPreset:
-                    MemoryPreset(subCodePacketPacket);
+                case Instruction.MemoryPreset:
+                    MemoryPreset(packetPacket);
                     break;
-                case CdgInstBorderPreset:
-                    BorderPreset(subCodePacketPacket);
+                case Instruction.BorderPreset:
+                    BorderPreset(packetPacket);
                     break;
-                case CdgInstTileBlock:
-                    TileBlock(subCodePacketPacket, false);
+                case Instruction.TileBlockNormal:
+                    TileBlock(packetPacket, false);
                     break;
-                case CdgInstScrollPreset:
-                    Scroll(subCodePacketPacket, false);
+                case Instruction.ScrollPreset:
+                    Scroll(packetPacket, false);
                     break;
-                case CdgInstScrollCopy:
-                    Scroll(subCodePacketPacket, true);
+                case Instruction.ScrollCopy:
+                    Scroll(packetPacket, true);
                     break;
-                case CdgInstDefTranspCol:
-                    DefineTransparentColour(subCodePacketPacket);
+                case Instruction.DefineTransparentColor:
+                    DefineTransparentColour(packetPacket);
                     break;
-                case CdgInstLoadColTblLo:
-                    LoadColorTable(subCodePacketPacket, 0);
+                case Instruction.LoadColorTableLower:
+                    LoadColorTable(packetPacket, 0);
                     break;
-                case CdgInstLoadColTblHigh:
-                    LoadColorTable(subCodePacketPacket, 1);
+                case Instruction.LoadColorTableUpper:
+                    LoadColorTable(packetPacket, 1);
                     break;
-                case CdgInstTileBlockXor:
-                    TileBlock(subCodePacketPacket, true);
+                case Instruction.TileBlockXor:
+                    TileBlock(packetPacket, true);
                     break;
             }
         }
 
 
-        private void MemoryPreset(SubCodePacket pack)
+        private void MemoryPreset(Packet pack)
         {
             var colour = 0;
             var ri = 0;
@@ -206,14 +121,34 @@ namespace CdgLib
                 {
                     for (ci = 0; ci <= FullWidth - 1; ci++)
                     {
-                        _mPixelColours[ri, ci] = (byte) colour;
+                        _mPixelColours[ri, ci] = (byte)colour;
                     }
                 }
             }
         }
 
+        private void Reset()
+        {
+            Position = 0;
+            Array.Clear(_mPixelColours, 0, _mPixelColours.Length);
+            Array.Clear(_mColourTable, 0, _mColourTable.Length);
 
-        private void BorderPreset(SubCodePacket pack)
+            _mBorderColourIndex = 0;
+            _mTransparentColour = 0;
+            _mHOffset = 0;
+            _mVOffset = 0;
+
+            _mDuration = 0;
+            _previousPosition = 0;
+
+            //clear surface 
+            if (_mPSurface.RgbData != null)
+            {
+                Array.Clear(_mPSurface.RgbData, 0, _mPSurface.RgbData.Length);
+            }
+        }
+
+        private void BorderPreset(Packet pack)
         {
             var colour = 0;
             var ri = 0;
@@ -230,12 +165,12 @@ namespace CdgLib
             {
                 for (ci = 0; ci <= 5; ci++)
                 {
-                    _mPixelColours[ri, ci] = (byte) colour;
+                    _mPixelColours[ri, ci] = (byte)colour;
                 }
 
                 for (ci = FullWidth - 6; ci <= FullWidth - 1; ci++)
                 {
-                    _mPixelColours[ri, ci] = (byte) colour;
+                    _mPixelColours[ri, ci] = (byte)colour;
                 }
             }
 
@@ -243,18 +178,18 @@ namespace CdgLib
             {
                 for (ri = 0; ri <= 11; ri++)
                 {
-                    _mPixelColours[ri, ci] = (byte) colour;
+                    _mPixelColours[ri, ci] = (byte)colour;
                 }
 
                 for (ri = FullHeight - 12; ri <= FullHeight - 1; ri++)
                 {
-                    _mPixelColours[ri, ci] = (byte) colour;
+                    _mPixelColours[ri, ci] = (byte)colour;
                 }
             }
         }
 
 
-        private void LoadColorTable(SubCodePacket pack, int table)
+        private void LoadColorTable(Packet pack, int table)
         {
             for (var i = 0; i <= 7; i++)
             {
@@ -262,8 +197,8 @@ namespace CdgLib
                 //7 6 5 4 3 2 1 0     7 6 5 4 3 2 1 0
                 //X X r r r r g g     X X g g b b b b
 
-                var byte0 = pack.Data[2*i];
-                var byte1 = pack.Data[2*i + 1];
+                var byte0 = pack.Data[2 * i];
+                var byte1 = pack.Data[2 * i + 1];
                 var red = (byte0 & 0x3f) >> 2;
                 var green = ((byte0 & 0x3) << 2) | ((byte1 & 0x3f) >> 4);
                 var blue = byte1 & 0xf;
@@ -274,13 +209,13 @@ namespace CdgLib
 
                 if (_mPSurface != null)
                 {
-                    _mColourTable[i + table*8] = _mPSurface.MapRgbColour(red, green, blue);
+                    _mColourTable[i + table * 8] = _mPSurface.MapRgbColour(red, green, blue);
                 }
             }
         }
 
 
-        private void TileBlock(SubCodePacket pack, bool bXor)
+        private void TileBlock(Packet pack, bool bXor)
         {
             var colour0 = 0;
             var colour1 = 0;
@@ -294,8 +229,8 @@ namespace CdgLib
 
             colour0 = pack.Data[0] & 0xf;
             colour1 = pack.Data[1] & 0xf;
-            rowIndex = (pack.Data[2] & 0x1f)*12;
-            columnIndex = (pack.Data[3] & 0x3f)*6;
+            rowIndex = (pack.Data[2] & 0x1f) * 12;
+            columnIndex = (pack.Data[3] & 0x3f) * 6;
 
             if (rowIndex > FullHeight - TileHeight)
                 return;
@@ -345,18 +280,18 @@ namespace CdgLib
                     //Set the pixel with the new colour. We set both the surfarray
                     //containing actual RGB values, as well as our array containing
                     //the colour indexes into our colour table. 
-                    _mPixelColours[rowIndex + i, columnIndex + j] = (byte) newCol;
+                    _mPixelColours[rowIndex + i, columnIndex + j] = (byte)newCol;
                 }
             }
         }
 
-        private void DefineTransparentColour(SubCodePacket pack)
+        private void DefineTransparentColour(Packet pack)
         {
             _mTransparentColour = pack.Data[0] & 0xf;
         }
 
 
-        private void Scroll(SubCodePacket pack, bool copy)
+        private void Scroll(Packet pack, bool copy)
         {
             var colour = 0;
             var hScroll = 0;
@@ -425,7 +360,7 @@ namespace CdgLib
             {
                 for (ci = 0; ci <= FullWidth - 1; ci++)
                 {
-                    temp[(ri + vInc)%FullHeight, (ci + hInc)%FullWidth] = _mPixelColours[ri, ci];
+                    temp[(ri + vInc) % FullHeight, (ci + hInc) % FullWidth] = _mPixelColours[ri, ci];
                 }
             }
 
@@ -442,7 +377,7 @@ namespace CdgLib
                     {
                         for (ri = 0; ri <= vScrollPixels - 1; ri++)
                         {
-                            temp[ri, ci] = (byte) colour;
+                            temp[ri, ci] = (byte)colour;
                         }
                     }
                 }
@@ -452,7 +387,7 @@ namespace CdgLib
                     {
                         for (ri = FullHeight + vScrollPixels; ri <= FullHeight - 1; ri++)
                         {
-                            temp[ri, ci] = (byte) colour;
+                            temp[ri, ci] = (byte)colour;
                         }
                     }
                 }
@@ -464,7 +399,7 @@ namespace CdgLib
                     {
                         for (ri = 0; ri <= FullHeight - 1; ri++)
                         {
-                            temp[ri, ci] = (byte) colour;
+                            temp[ri, ci] = (byte)colour;
                         }
                     }
                 }
@@ -474,7 +409,7 @@ namespace CdgLib
                     {
                         for (ri = 0; ri <= FullHeight - 1; ri++)
                         {
-                            temp[ri, ci] = (byte) colour;
+                            temp[ri, ci] = (byte)colour;
                         }
                     }
                 }
@@ -487,27 +422,6 @@ namespace CdgLib
                 for (ci = 0; ci <= FullWidth - 1; ci++)
                 {
                     _mPixelColours[ri, ci] = temp[ri, ci];
-                }
-            }
-        }
-
-        private void RenderSurface()
-        {
-            if (_mPSurface == null)
-                return;
-            for (var ri = 0; ri <= FullHeight - 1; ri++)
-            {
-                for (var ci = 0; ci <= FullWidth - 1; ci++)
-                {
-                    if (ri < TileHeight || ri >= FullHeight - TileHeight || ci < TileWidth ||
-                        ci >= FullWidth - TileWidth)
-                    {
-                        _mPSurface.RgbData[ri, ci] = _mColourTable[_mBorderColourIndex];
-                    }
-                    else
-                    {
-                        _mPSurface.RgbData[ri, ci] = _mColourTable[_mPixelColours[ri + _mVOffset, ci + _mHOffset]];
-                    }
                 }
             }
         }

@@ -1,6 +1,6 @@
-﻿namespace CdgLib
+﻿namespace CdgLib.SubCode
 {
-    public class SubCodePacket
+    public class Packet
     {
         public byte[] Command = new byte[1];
         public byte[] Data = new byte[16];

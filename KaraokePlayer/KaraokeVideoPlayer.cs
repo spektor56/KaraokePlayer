@@ -16,7 +16,7 @@ namespace KaraokePlayer
     public partial class KaraokeVideoPlayer : UserControl
     {
         private readonly PictureBox _lyrics = new PictureBox {Dock = DockStyle.Fill};
-        private CdgFile _cdgFile;
+        private GraphicsFile _cdgFile;
         private Image _lyricImage;
         private OverlayForm _overlayForm;
         private DateTime _startTime;
@@ -39,7 +39,7 @@ namespace KaraokePlayer
         public void Play(Uri file)
         {
             vlcPlayer.SetMedia(file);
-            _cdgFile = new CdgFile(Path.ChangeExtension(file.LocalPath, "cdg"), FileMode.Open, FileAccess.Read);
+            _cdgFile = new GraphicsFile(Path.ChangeExtension(file.LocalPath, "cdg"), FileMode.Open, FileAccess.Read);
             vlcPlayer.Play();
         }
 
@@ -52,7 +52,7 @@ namespace KaraokePlayer
             {
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var picture = await _cdgFile.Render((long) (DateTime.Now - _startTime).TotalMilliseconds);
+                var picture = await _cdgFile.RenderAtTime((long) (DateTime.Now - _startTime).TotalMilliseconds);
                 stopwatch.Reset();
                 Debug.Print(stopwatch.ElapsedMilliseconds.ToString());
 

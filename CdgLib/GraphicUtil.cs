@@ -61,7 +61,7 @@ namespace CdgLib
         public static Bitmap GetCdgSizeBitmap(string filename)
         {
             var bm = new Bitmap(filename);
-            return ResizeBitmap(ref bm, CdgFile.FullWidth, CdgFile.FullHeight);
+            return ResizeBitmap(ref bm, GraphicsFile.FullWidth, GraphicsFile.FullHeight);
         }
 
         /// <summary>

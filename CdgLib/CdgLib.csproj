@@ -42,9 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CdgFile.cs" />
+    <Compile Include="SubCode\Command.cs" />
+    <Compile Include="SubCode\Instruction.cs" />
+    <Compile Include="GraphicsFile.cs" />
     <Compile Include="CdgFileIoStream.cs" />
-    <Compile Include="SubCodePacket.cs" />
+    <Compile Include="Graphic.cs" />
+    <Compile Include="SubCode\Packet.cs" />
     <Compile Include="GraphicUtil.cs" />
     <Compile Include="Surface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

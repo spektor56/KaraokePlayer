@@ -25,7 +25,7 @@ namespace KaraokeConverter
 
         #region "Private Declarations"
 
-        private CdgFile mCDGFile;
+        private GraphicsFile mCDGFile;
         private CdgFileIoStream mCDGStream;
         private string mCDGFileName;
         private string mMP3FileName;
