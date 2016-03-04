@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -79,6 +80,11 @@ namespace KaraokePlayer
                 _overlayForm = new OverlayForm(this);
                 _overlayForm.Controls.Add(_lyrics);
             }
+        }
+
+        private void vlcPlayer_VlcLibDirectoryNeeded(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
+        {
+            e.VlcLibDirectory = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"lib\vlc\"));
         }
     }
 }

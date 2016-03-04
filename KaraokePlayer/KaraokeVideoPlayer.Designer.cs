@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(KaraokeVideoPlayer));
             this.vlcPlayer = new Vlc.DotNet.Forms.VlcControl();
             ((System.ComponentModel.ISupportInitialize)(this.vlcPlayer)).BeginInit();
             this.SuspendLayout();
@@ -43,7 +42,7 @@
             this.vlcPlayer.Spu = -1;
             this.vlcPlayer.TabIndex = 0;
             this.vlcPlayer.Text = "vlcControl1";
-            this.vlcPlayer.VlcLibDirectory = ((System.IO.DirectoryInfo)(resources.GetObject("vlcPlayer.VlcLibDirectory")));
+            this.vlcPlayer.VlcLibDirectory = null;
             this.vlcPlayer.VlcMediaplayerOptions = new string[] {
         "--projectm-preset-path=Presets",
         "--projectm-width=1680",
@@ -53,6 +52,7 @@
         "--no-video",
         "--extraintf=logger",
         "--verbose=2"};
+            this.vlcPlayer.VlcLibDirectoryNeeded += new System.EventHandler<Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs>(this.vlcPlayer_VlcLibDirectoryNeeded);
             this.vlcPlayer.Playing += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs>(this.vlcPlayer_Playing);
             this.vlcPlayer.TimeChanged += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(this.vlcPlayer_TimeChanged);
             this.vlcPlayer.Stopped += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerStoppedEventArgs>(this.vlcPlayer_Stopped);
