@@ -48,17 +48,11 @@
             this.GroupBox2 = new System.Windows.Forms.GroupBox();
             this.GroupBox1 = new System.Windows.Forms.GroupBox();
             this.pbAVI = new System.Windows.Forms.ProgressBar();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.Panel2 = new System.Windows.Forms.Panel();
             this.SaveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.vlcControl1 = new Vlc.DotNet.Forms.VlcControl();
             this.Panel1.SuspendLayout();
             this.GroupBox3.SuspendLayout();
             this.GroupBox2.SuspendLayout();
             this.GroupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.Panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vlcControl1)).BeginInit();
             this.SuspendLayout();
             // 
             // tbFileName
@@ -68,8 +62,6 @@
             this.tbFileName.ReadOnly = true;
             this.tbFileName.Size = new System.Drawing.Size(475, 20);
             this.tbFileName.TabIndex = 0;
-            this.tbFileName.Text = "D:\\Karaoke\\SF001 - SF339 Sunfly Hits Karaoke Complete\\SF339\\SF339-01 - Kiesza - H" +
-    "ideaway.cdg";
             // 
             // btBrowseCDG
             // 
@@ -166,7 +158,6 @@
             this.tbBackGroundAVI.Name = "tbBackGroundAVI";
             this.tbBackGroundAVI.Size = new System.Drawing.Size(356, 20);
             this.tbBackGroundAVI.TabIndex = 17;
-            this.tbBackGroundAVI.Text = "C:\\Users\\l-bre\\Downloads\\Kristel\'s Jams\\drop.avi";
             // 
             // btBackGroundBrowse
             // 
@@ -194,7 +185,6 @@
             this.tbAVIFile.Name = "tbAVIFile";
             this.tbAVIFile.Size = new System.Drawing.Size(356, 20);
             this.tbAVIFile.TabIndex = 9;
-            this.tbAVIFile.Text = "C:\\Users\\l-bre\\Desktop\\tester.avi";
             // 
             // btOutputAVI
             // 
@@ -261,45 +251,11 @@
             this.pbAVI.Size = new System.Drawing.Size(555, 23);
             this.pbAVI.TabIndex = 14;
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(207, 47);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(392, 151);
-            this.pictureBox1.TabIndex = 24;
-            this.pictureBox1.TabStop = false;
-            // 
-            // Panel2
-            // 
-            this.Panel2.Controls.Add(this.vlcControl1);
-            this.Panel2.Controls.Add(this.pictureBox1);
-            this.Panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Panel2.Location = new System.Drawing.Point(0, 255);
-            this.Panel2.Name = "Panel2";
-            this.Panel2.Size = new System.Drawing.Size(649, 225);
-            this.Panel2.TabIndex = 4;
-            this.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel2_Paint);
-            // 
-            // vlcControl1
-            // 
-            this.vlcControl1.BackColor = System.Drawing.Color.Black;
-            this.vlcControl1.Location = new System.Drawing.Point(411, 18);
-            this.vlcControl1.Name = "vlcControl1";
-            this.vlcControl1.Size = new System.Drawing.Size(75, 23);
-            this.vlcControl1.Spu = -1;
-            this.vlcControl1.TabIndex = 25;
-            this.vlcControl1.Text = "vlcControl1";
-            this.vlcControl1.VlcLibDirectory = null;
-            this.vlcControl1.VlcMediaplayerOptions = new string[] {
-        "--projectm-preset-path=\"C:\\Program Files\\VideoLAN\\VLC\\visualizations\\presets_milk" +
-            "drop\""};
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(649, 480);
-            this.Controls.Add(this.Panel2);
+            this.ClientSize = new System.Drawing.Size(649, 255);
             this.Controls.Add(this.Panel1);
             this.Name = "Form1";
             this.Text = "MP3+CDG To Video Converter";
@@ -310,9 +266,6 @@
             this.GroupBox2.ResumeLayout(false);
             this.GroupBox2.PerformLayout();
             this.GroupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.vlcControl1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -321,7 +274,6 @@
 
         private System.Windows.Forms.OpenFileDialog OpenFileDialog1;
         private System.Windows.Forms.Panel Panel1;
-        private System.Windows.Forms.Panel Panel2;
         private System.Windows.Forms.GroupBox GroupBox2;
         private System.Windows.Forms.GroupBox GroupBox1;
         private System.Windows.Forms.ProgressBar pbAVI;
@@ -348,9 +300,6 @@
 
 
         #endregion
-
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private Vlc.DotNet.Forms.VlcControl vlcControl1;
     }
 }
 
