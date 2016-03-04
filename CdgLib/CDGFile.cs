@@ -97,8 +97,6 @@ namespace CdgLib
 
         public async Task<bool> RenderAtPosition(long position)
         {
-            long numberOfSubCodePackets = 0;
-   
             if (position < _previousPosition)
             {
                 Position = 0;
@@ -106,13 +104,10 @@ namespace CdgLib
             }
 
             //duration of one packet is 1/300 seconds (4 packets per sector, 75 sectors per second)
-            //300p/s  == 300p/1000ms == 3p/10
+            //p=t*3/10  t=p*10/3 t=milliseconds, p=packets
             var timeToRender = position - _previousPosition;
             _previousPosition += timeToRender;
-            numberOfSubCodePackets=(timeToRender*3)/10;
-
-            //TODO: double check logic due to inline while loop fucntionality
-            //AndAlso m_pSurface.rgbData Is Nothing
+            var numberOfSubCodePackets = timeToRender*3/10;
             while (numberOfSubCodePackets > 0)
             {
                 var pack = await ReadSubCode();
