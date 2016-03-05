@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CdgLib.SubCode;
 
@@ -24,9 +25,8 @@ namespace CdgLib
 
         private long _previousPosition;
 
-        public GraphicsFile(string path, FileMode mode, FileAccess fileAccess) : base(path, mode, fileAccess, FileShare.Read)
+        public GraphicsFile(string path) : base(path, FileMode.Open, FileAccess.Read, FileShare.Read)
         {
-          
         }
 
         public bool Transparent => true;
@@ -73,12 +73,7 @@ namespace CdgLib
 
             for (var i = 0; i < bytesRead/CdgPacketSize; i++)
             {
-                var subCodePacket = new Packet();
-                Array.Copy(buffer, i*CdgPacketSize + 0, subCodePacket.Command, 0, 1);
-                Array.Copy(buffer, i*CdgPacketSize + 1, subCodePacket.Instruction, 0, 1);
-                Array.Copy(buffer, i*CdgPacketSize + 2, subCodePacket.ParityQ, 0, 2);
-                Array.Copy(buffer, i*CdgPacketSize + 4, subCodePacket.Data, 0, 16);
-                Array.Copy(buffer, i*CdgPacketSize + 20, subCodePacket.ParityP, 0, 4);
+                var subCodePacket = new Packet(buffer.Skip(i* CdgPacketSize).Take(CdgPacketSize).ToArray());
                 subCodePackets.Add(subCodePacket);
             }
             return subCodePackets;

@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extension\Extensions.cs" />
     <Compile Include="SubCode\Command.cs" />
     <Compile Include="SubCode\Instruction.cs" />
     <Compile Include="GraphicsFile.cs" />
