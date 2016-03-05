@@ -1,7 +1,7 @@
 ﻿namespace CdgLib.SubCode
 {
-    internal enum Command : byte
+    public enum Command 
     {
-        Graphic = 0x9
+        Graphic = 9
     }
 }

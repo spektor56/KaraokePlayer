@@ -3,7 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
-    internal enum Instruction
+    public enum Instruction
     {
         /// <summary>
         /// Set the screen to a particular color.

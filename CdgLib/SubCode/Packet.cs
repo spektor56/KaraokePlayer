@@ -4,18 +4,21 @@ namespace CdgLib.SubCode
 {
     public class Packet
     {
-        public byte[] Command = new byte[1];
-        public byte[] Data = new byte[16];
-        public byte[] Instruction = new byte[1];
-        public byte[] ParityP = new byte[4];
-        public byte[] ParityQ = new byte[2];
+        public Command Command { get; }
 
-        private const byte Mask = 0x3f;
+        public Instruction Instruction { get; }
+
+        public byte[] ParityQ { get; } = new byte[2];
+
+        public byte[] Data { get; } = new byte[16];
+
+        public byte[] ParityP { get; } = new byte[4];
+
 
         public Packet(byte[] data)
         {
-            Array.Copy(data, 0, Command, 0, 1);
-            Array.Copy(data, 1, Instruction, 0, 1);
+            Command = (Command)(data[0] & 0x3F);
+            Instruction = (Instruction)(data[1] & 0x3F);
             Array.Copy(data, 2, ParityQ, 0, 2);
             Array.Copy(data, 4, Data, 0, 16);
             Array.Copy(data, 20, ParityP, 0, 4);
@@ -23,35 +26,34 @@ namespace CdgLib.SubCode
 
         public void ApplyTransform(int[,] data)
         {
-            if ((Command[0] & Mask) != (int) SubCode.Command.Graphic) return;
-            var instructionCode = (Instruction)(Instruction[0] & Mask);
-            switch (instructionCode)
+            if (Command != Command.Graphic) return;
+            switch (Instruction)
             {
-                case SubCode.Instruction.MemoryPreset:
+                case Instruction.MemoryPreset:
                     MemoryPreset(data);
                     break;
-                case SubCode.Instruction.BorderPreset:
+                case Instruction.BorderPreset:
                     BorderPreset(data);
                     break;
-                case SubCode.Instruction.TileBlockNormal:
+                case Instruction.TileBlockNormal:
                     TileBlock(data,false);
                     break;
-                case SubCode.Instruction.ScrollPreset:
+                case Instruction.ScrollPreset:
                     Scroll(data,false);
                     break;
-                case SubCode.Instruction.ScrollCopy:
+                case Instruction.ScrollCopy:
                     Scroll(data,true);
                     break;
-                case SubCode.Instruction.DefineTransparentColor:
+                case Instruction.DefineTransparentColor:
                     DefineTransparentColour(data);
                     break;
-                case SubCode.Instruction.LoadColorTableLower:
+                case Instruction.LoadColorTableLower:
                     LoadColorTable(data,0);
                     break;
-                case SubCode.Instruction.LoadColorTableUpper:
+                case Instruction.LoadColorTableUpper:
                     LoadColorTable(data,1);
                     break;
-                case SubCode.Instruction.TileBlockXor:
+                case Instruction.TileBlockXor:
                     TileBlock(data,true);
                     break;
             }

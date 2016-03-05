@@ -13,14 +13,14 @@ namespace CdgLib
     {
         private const int ColourTableSize = 16;
 
-        private const int CdgPacketSize = 24;
+        private const int PacketSize = 24;
         private const int TileHeight = 12;
         private const int TileWidth = 6;
         public const int FullWidth = 300;
         public const int FullHeight = 216;
 
-        private readonly int[] _mColourTable = new int[ColourTableSize];
-        private readonly byte[,] _mPixelColours = new byte[FullHeight, FullWidth];
+        private readonly int[] _colourTable = new int[ColourTableSize];
+        private readonly byte[,] _pixelColours = new byte[FullHeight, FullWidth];
 
 
         private long _previousPosition;
@@ -31,13 +31,13 @@ namespace CdgLib
 
         public bool Transparent => true;
 
-        public long Duration => Length/CdgPacketSize*1000/300;
+        public long Duration => Length/PacketSize*1000/300;
 
         public async Task<Bitmap> RenderAtTime(long position = -1)
         {
             if (position < 0)
             {
-                position = _previousPosition + CdgPacketSize;
+                position = _previousPosition + PacketSize;
             }
 
             if (position < _previousPosition)
@@ -68,12 +68,12 @@ namespace CdgLib
         private async Task<IEnumerable<Packet>> ReadSubCodeAsync(long numberOfPackets)
         {
             var subCodePackets = new List<Packet>();
-            var buffer = new byte[CdgPacketSize*numberOfPackets];
+            var buffer = new byte[PacketSize*numberOfPackets];
             var bytesRead = await ReadAsync(buffer, 0, buffer.Length);
 
-            for (var i = 0; i < bytesRead/CdgPacketSize; i++)
+            for (var i = 0; i < bytesRead/PacketSize; i++)
             {
-                var subCodePacket = new Packet(buffer.Skip(i* CdgPacketSize).Take(CdgPacketSize).ToArray());
+                var subCodePacket = new Packet(buffer.Skip(i* PacketSize).Take(PacketSize).ToArray());
                 subCodePackets.Add(subCodePacket);
             }
             return subCodePackets;
@@ -92,11 +92,11 @@ namespace CdgLib
                     if (ri < TileHeight || ri >= FullHeight - TileHeight || ci < TileWidth ||
                         ci >= FullWidth - TileWidth)
                     {
-                     //   _mPSurface.RgbData[ri, ci] = _mColourTable[_mBorderColourIndex];
+                     //   _mPSurface.RgbData[ri, ci] = _colourTable[_mBorderColourIndex];
                     }
                     else
                     {
-                        _mPSurface.RgbData[ri, ci] = _mColourTable[_mPixelColours[ri + _mVOffset, ci + _mHOffset]];
+                        _mPSurface.RgbData[ri, ci] = _colourTable[_pixelColours[ri + _mVOffset, ci + _mHOffset]];
                     }
                 }
             }
