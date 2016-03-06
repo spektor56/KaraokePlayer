@@ -16,6 +16,9 @@ namespace CdgLib
         public const int FullWidth = 300;
         public const int FullHeight = 216;
 
+        private int _horizonalOffset;
+        private int _verticalOffset;
+
         private readonly int[] _colourTable = new int[ColourTableSize];
         private readonly byte[,] _pixelColours = new byte[FullHeight, FullWidth];
         private int[,] _graphicData;
@@ -253,8 +256,8 @@ namespace CdgLib
             var verticalOffset = verticalScroll & 0xf;
 
 
-            _mHOffset = horizontalOffset < 5 ? horizontalOffset : 5;
-            _mVOffset = verticalOffset < 11 ? verticalOffset : 11;
+            _horizonalOffset = horizontalOffset < 5 ? horizontalOffset : 5;
+            this._verticalOffset = verticalOffset < 11 ? verticalOffset : 11;
 
             //Scroll Vertical - Calculate number of pixels
 
@@ -367,5 +370,23 @@ namespace CdgLib
             }
         }
 
+        private void RenderSurface()
+        {
+            for (var rowIndex = 0; rowIndex <= FullHeight - 1; rowIndex++)
+            {
+                for (var columnIndex = 0; columnIndex <= FullWidth - 1; columnIndex++)
+                {
+                    if (rowIndex < TileHeight || rowIndex >= FullHeight - TileHeight || columnIndex < TileWidth ||
+                        columnIndex >= FullWidth - TileWidth)
+                    {
+                        _graphicData[rowIndex, columnIndex] = _colourTable[_mBorderColourIndex];
+                    }
+                    else
+                    {
+                        _graphicData[rowIndex, columnIndex] = _colourTable[_pixelColours[rowIndex + _verticalOffset, columnIndex + _horizonalOffset]];
+                    }
+                }
+            }
+        }
     }
 }
