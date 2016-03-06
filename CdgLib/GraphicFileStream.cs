@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,9 @@ namespace CdgLib
 
             for (var i = 0; i < bytesRead/PacketSize; i++)
             {
-                var subCodePacket = new Packet(buffer.Skip(i*PacketSize).Take(PacketSize).ToArray());
+                var cdgPacket = new byte[PacketSize];
+                Array.Copy(buffer,i*PacketSize,cdgPacket,0,PacketSize);
+                var subCodePacket = new Packet(cdgPacket);
                 subCodePackets.Add(subCodePacket);
             }
             return subCodePackets;

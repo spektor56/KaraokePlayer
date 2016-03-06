@@ -36,10 +36,10 @@ namespace KaraokePlayer
 
         }
 
-        public void Play(Uri file)
+        public async void Play(Uri file)
         {
             vlcPlayer.SetMedia(file);
-            _cdgFile = new GraphicsFile(Path.ChangeExtension(file.LocalPath, "cdg"), FileMode.Open, FileAccess.Read);
+            _cdgFile = await  GraphicsFile.LoadAsync(Path.ChangeExtension(file.LocalPath, "cdg"));
             vlcPlayer.Play();
         }
 
@@ -52,7 +52,7 @@ namespace KaraokePlayer
             {
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var picture = await _cdgFile.RenderAtTime((long) (DateTime.Now - _startTime).TotalMilliseconds);
+                var picture = _cdgFile.RenderAtTime((long) (DateTime.Now - _startTime).TotalMilliseconds);
                 stopwatch.Reset();
                 Debug.Print(stopwatch.ElapsedMilliseconds.ToString());
 

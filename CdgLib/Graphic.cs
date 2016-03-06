@@ -16,12 +16,14 @@ namespace CdgLib
         public const int FullWidth = 300;
         public const int FullHeight = 216;
 
+        private int _borderColourIndex;
+
         private int _horizonalOffset;
         private int _verticalOffset;
 
         private readonly int[] _colourTable = new int[ColourTableSize];
         private readonly byte[,] _pixelColours = new byte[FullHeight, FullWidth];
-        private int[,] _graphicData;
+        private int[,] _graphicData = new int[FullHeight, FullWidth];
 
         public Graphic(IEnumerable<Packet> packets)
         {
@@ -33,6 +35,7 @@ namespace CdgLib
 
         public Bitmap ToBitmap()
         {
+            RenderSurface();
             Bitmap myBitmap;
             using (var bitmapStream = new MemoryStream())
             {
@@ -104,6 +107,7 @@ namespace CdgLib
         private void MemoryPreset(Packet packet)
         {
             var colour = packet.Data[0] & 0xf;
+            _borderColourIndex = colour;
             var repeat = packet.Data[1] & 0xf;
 
             //we have a reliable packet stream, so the repeat command 
@@ -133,6 +137,7 @@ namespace CdgLib
             int columnIndex;
 
             var colour = packet.Data[0] & 0xf;
+            _borderColourIndex = colour;
 
             //The border area is the area contained with a rectangle 
             //defined by (0,0,300,216) minus the interior pixels which are contained
@@ -379,7 +384,7 @@ namespace CdgLib
                     if (rowIndex < TileHeight || rowIndex >= FullHeight - TileHeight || columnIndex < TileWidth ||
                         columnIndex >= FullWidth - TileWidth)
                     {
-                        _graphicData[rowIndex, columnIndex] = _colourTable[_mBorderColourIndex];
+                        _graphicData[rowIndex, columnIndex] = _colourTable[_borderColourIndex];
                     }
                     else
                     {
