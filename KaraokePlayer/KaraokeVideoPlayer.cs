@@ -26,41 +26,33 @@ namespace KaraokePlayer
         public KaraokeVideoPlayer()
         {
             InitializeComponent();
-            _lyricTimer.Interval = 500;
+            _lyricTimer.Interval = 30;
             _lyricTimer.Elapsed += LyricTimerOnElapsed;
         }
 
-        private async void LyricTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        private void LyricTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            
+            var picture = _cdgFile.RenderAtTime((long)(DateTime.Now - _startTime).TotalMilliseconds);
+            _lyrics.Image = picture;
 
         }
 
         public async void Play(Uri file)
         {
             vlcPlayer.SetMedia(file);
-            _cdgFile = await  GraphicsFile.LoadAsync(Path.ChangeExtension(file.LocalPath, "cdg"));
+           _cdgFile = await  GraphicsFile.LoadAsync(Path.ChangeExtension(file.LocalPath, "cdg"));
             vlcPlayer.Play();
         }
 
-        private async void vlcPlayer_Playing(object sender, VlcMediaPlayerPlayingEventArgs e)
+        private void vlcPlayer_Playing(object sender, VlcMediaPlayerPlayingEventArgs e)
         {
             _startTime = DateTime.Now;
             _lyricTimer.Start();
-
-            while (vlcPlayer.IsPlaying)
-            {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var picture = _cdgFile.RenderAtTime((long) (DateTime.Now - _startTime).TotalMilliseconds);
-                stopwatch.Reset();
-                Debug.Print(stopwatch.ElapsedMilliseconds.ToString());
-
-
-                    _lyrics.Image = picture;
-
-          
-            }
+            
+            
+              
+    
+            
         }
 
         private void vlcPlayer_TimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)

@@ -23,7 +23,7 @@ namespace CdgLib
 
         private readonly int[] _colourTable = new int[ColourTableSize];
         private readonly byte[,] _pixelColours = new byte[FullHeight, FullWidth];
-        private int[,] _graphicData = new int[FullHeight, FullWidth];
+        private readonly int[,] _graphicData = new int[FullHeight, FullWidth];
 
         public Graphic(IEnumerable<Packet> packets)
         {
@@ -163,7 +163,7 @@ namespace CdgLib
                     _pixelColours[rowIndex, columnIndex] = (byte)colour;
                 }
 
-                for (rowIndex = _pixelColours.GetLength(1) - 12; rowIndex < _pixelColours.GetLength(1); rowIndex++)
+                for (rowIndex = _pixelColours.GetLength(0) - 12; rowIndex < _pixelColours.GetLength(0); rowIndex++)
                 {
                     _pixelColours[rowIndex, columnIndex] = (byte)colour;
                 }
