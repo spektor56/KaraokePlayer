@@ -42,15 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extension\Extensions.cs" />
+    <Compile Include="GraphicFileStream.cs" />
     <Compile Include="SubCode\Command.cs" />
     <Compile Include="SubCode\Instruction.cs" />
     <Compile Include="GraphicsFile.cs" />
-    <Compile Include="CdgFileIoStream.cs" />
     <Compile Include="Graphic.cs" />
     <Compile Include="SubCode\Packet.cs" />
-    <Compile Include="GraphicUtil.cs" />
-    <Compile Include="Surface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
