@@ -55,13 +55,28 @@ namespace KaraokePlayer
         {
             if (ParentForm != null)
             {
-                _overlayForm = new OverlayForm(this);
+               _overlayForm = new OverlayForm(this);
             }
         }
 
         private void vlcPlayer_VlcLibDirectoryNeeded(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
         {
             e.VlcLibDirectory = new DirectoryInfo(@"lib\vlc\");
+        }
+
+        private void vlcPlayer_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
+
+        private void KaraokeVideoPlayer_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_DoubleClick(object sender, EventArgs e)
+        {
+
         }
     }
 }

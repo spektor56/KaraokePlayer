@@ -12,7 +12,9 @@ namespace KaraokePlayer
 
         public OverlayForm(ContainerControl parent)
         {
+            
             InitializeComponent();
+            Graphic.BackColor = Color.Transparent;
             _parent = parent;
             BackColor = Color.FromArgb(1, 1, 1);
             TransparencyKey = Color.FromArgb(1, 1, 1);
@@ -21,17 +23,19 @@ namespace KaraokePlayer
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.Manual;
             AutoScaleMode = AutoScaleMode.None;
-            Location = parent.PointToScreen(Point.Empty);
-            ClientSize = parent.ClientSize;
             Show(parent);
             parent.ParentForm.LocationChanged += Cover_LocationChanged;
-            parent.ClientSizeChanged += Cover_ClientSizeChanged;
+            parent.LocationChanged += Cover_LocationChanged;
+            parent.VisibleChanged += Cover_LocationChanged;
+            parent.ClientSizeChanged += Cover_ClientSizeChanged;            
             // Disable Aero transitions, the plexiglass gets too visible
             if (Environment.OSVersion.Version.Major >= 6)
             {
                 var value = 1;
                 DwmSetWindowAttribute(parent.ParentForm.Handle, DwmwaTransitionsForcedisabled, ref value, 4);
             }
+            Location = parent.PointToScreen(Point.Empty);
+            ClientSize = parent.ClientSize;
         }
 
         public sealed override Color BackColor
@@ -42,7 +46,7 @@ namespace KaraokePlayer
 
         private void Cover_LocationChanged(object sender, EventArgs e)
         {
-            Location = _parent.PointToScreen(Point.Empty);
+           Location = _parent.PointToScreen(Point.Empty);
         }
 
         private void Cover_ClientSizeChanged(object sender, EventArgs e)
@@ -66,10 +70,22 @@ namespace KaraokePlayer
         protected override void OnActivated(EventArgs e)
         {
             // Always keep the owner activated instead
-            //   BeginInvoke(new Action(() => Owner.Activate()));
+            BeginInvoke(new Action(() => Owner.Activate()));
         }
 
         [DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hWnd, int attr, ref int value, int attrLen);
+
+        private void Graphic_DoubleClick(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void OverlayForm_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
+
+
     }
 }

@@ -41,6 +41,7 @@
             this.Graphic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.Graphic.TabIndex = 0;
             this.Graphic.TabStop = false;
+            this.Graphic.DoubleClick += new System.EventHandler(this.Graphic_DoubleClick);
             // 
             // OverlayForm
             // 
@@ -50,6 +51,7 @@
             this.Controls.Add(this.Graphic);
             this.Name = "OverlayForm";
             this.Text = "OverlayForm";
+            this.DoubleClick += new System.EventHandler(this.OverlayForm_DoubleClick);
             ((System.ComponentModel.ISupportInitialize)(this.Graphic)).EndInit();
             this.ResumeLayout(false);
 

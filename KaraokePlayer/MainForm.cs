@@ -21,5 +21,7 @@ namespace KaraokePlayer
         {
             karaokeVideoPlayer1.Play(new Uri(@"D:\Karaoke\SF360 February 2016\SF360-01 - Charlie Puth - One Call Away\SF360-01 - Charlie Puth - One Call Away.mp3"));
         }
+
+
     }
 }
