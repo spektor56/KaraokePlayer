@@ -15,26 +15,22 @@ namespace KaraokePlayer
 {
     public partial class KaraokeVideoPlayer : UserControl
     {
-        private readonly PictureBox _lyrics = new PictureBox {Dock = DockStyle.Fill};
         private GraphicsFile _cdgFile;
-        private Image _lyricImage;
         private OverlayForm _overlayForm;
         private DateTime _startTime;
         private readonly System.Timers.Timer _lyricTimer = new System.Timers.Timer();
-        private Stopwatch _stopwatch = new Stopwatch();
 
         public KaraokeVideoPlayer()
         {
             InitializeComponent();
-            _lyricTimer.Interval = 30;
+            _lyricTimer.Interval = 50;
             _lyricTimer.Elapsed += LyricTimerOnElapsed;
         }
 
         private void LyricTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             var picture = _cdgFile.RenderAtTime((long)(DateTime.Now - _startTime).TotalMilliseconds);
-            _lyrics.Image = picture;
-
+            _overlayForm.Graphic.Image = picture;
         }
 
         public async void Play(Uri file)
@@ -48,11 +44,6 @@ namespace KaraokePlayer
         {
             _startTime = DateTime.Now;
             _lyricTimer.Start();
-            
-            
-              
-    
-            
         }
 
         private void vlcPlayer_TimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
@@ -60,17 +51,11 @@ namespace KaraokePlayer
             _startTime = DateTime.Now.AddMilliseconds(-e.NewTime);
         }
 
-        private void vlcPlayer_Stopped(object sender, VlcMediaPlayerStoppedEventArgs e)
-        {
-            _overlayForm.Hide();
-        }
-
         private void KaraokeVideoPlayer_ParentChanged(object sender, EventArgs e)
         {
             if (ParentForm != null)
             {
                 _overlayForm = new OverlayForm(this);
-                _overlayForm.Controls.Add(_lyrics);
             }
         }
 

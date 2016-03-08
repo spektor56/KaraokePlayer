@@ -5,12 +5,15 @@ using System.Windows.Forms;
 
 namespace KaraokePlayer
 {
-    internal class OverlayForm : Form
+    public partial class OverlayForm : Form
     {
         private const int DwmwaTransitionsForcedisabled = 3;
+        ContainerControl _parent;
 
         public OverlayForm(ContainerControl parent)
         {
+            InitializeComponent();
+            _parent = parent;
             BackColor = Color.FromArgb(1, 1, 1);
             TransparencyKey = Color.FromArgb(1, 1, 1);
             FormBorderStyle = FormBorderStyle.None;
@@ -20,10 +23,9 @@ namespace KaraokePlayer
             AutoScaleMode = AutoScaleMode.None;
             Location = parent.PointToScreen(Point.Empty);
             ClientSize = parent.ClientSize;
+            Show(parent);
             parent.ParentForm.LocationChanged += Cover_LocationChanged;
-            parent.ParentForm.ClientSizeChanged += Cover_ClientSizeChanged;
-            Show(parent.ParentForm);
-            parent.ParentForm.Focus();
+            parent.ClientSizeChanged += Cover_ClientSizeChanged;
             // Disable Aero transitions, the plexiglass gets too visible
             if (Environment.OSVersion.Version.Major >= 6)
             {
@@ -40,12 +42,12 @@ namespace KaraokePlayer
 
         private void Cover_LocationChanged(object sender, EventArgs e)
         {
-           // Location = Owner.PointToScreen(Point.Empty);
+            Location = _parent.PointToScreen(Point.Empty);
         }
 
         private void Cover_ClientSizeChanged(object sender, EventArgs e)
         {
-            //ClientSize = Owner.ClientSize;
+            ClientSize = _parent.ClientSize;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -64,7 +66,7 @@ namespace KaraokePlayer
         protected override void OnActivated(EventArgs e)
         {
             // Always keep the owner activated instead
-            BeginInvoke(new Action(() => Owner.Activate()));
+            //   BeginInvoke(new Action(() => Owner.Activate()));
         }
 
         [DllImport("dwmapi.dll")]

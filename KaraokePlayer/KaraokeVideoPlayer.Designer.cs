@@ -44,18 +44,14 @@
             this.vlcPlayer.Text = "vlcControl1";
             this.vlcPlayer.VlcLibDirectory = null;
             this.vlcPlayer.VlcMediaplayerOptions = new string[] {
-        "--projectm-preset-path=Presets",
-        "--projectm-width=1680",
-        "--projectm-height=1050",
+        "--projectm-preset-path=lib\\presets",
         "--audio-visual=projectm",
         "--effect-list=scope",
         "--no-video",
-        "--extraintf=logger",
         "--verbose=2"};
             this.vlcPlayer.VlcLibDirectoryNeeded += new System.EventHandler<Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs>(this.vlcPlayer_VlcLibDirectoryNeeded);
             this.vlcPlayer.Playing += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs>(this.vlcPlayer_Playing);
             this.vlcPlayer.TimeChanged += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(this.vlcPlayer_TimeChanged);
-            this.vlcPlayer.Stopped += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerStoppedEventArgs>(this.vlcPlayer_Stopped);
             // 
             // KaraokeVideoPlayer
             // 

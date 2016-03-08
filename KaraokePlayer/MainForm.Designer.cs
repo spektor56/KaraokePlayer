@@ -34,6 +34,7 @@
             // 
             // materialRaisedButton1
             // 
+            this.materialRaisedButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.materialRaisedButton1.Depth = 0;
             this.materialRaisedButton1.Location = new System.Drawing.Point(385, 358);
             this.materialRaisedButton1.MouseState = MaterialSkin.MouseState.HOVER;
@@ -46,9 +47,12 @@
             // 
             // karaokeVideoPlayer1
             // 
-            this.karaokeVideoPlayer1.Location = new System.Drawing.Point(100, 140);
+            this.karaokeVideoPlayer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.karaokeVideoPlayer1.Location = new System.Drawing.Point(12, 72);
             this.karaokeVideoPlayer1.Name = "karaokeVideoPlayer1";
-            this.karaokeVideoPlayer1.Size = new System.Drawing.Size(249, 146);
+            this.karaokeVideoPlayer1.Size = new System.Drawing.Size(454, 280);
             this.karaokeVideoPlayer1.TabIndex = 0;
             // 
             // MainForm
