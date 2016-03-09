@@ -1,6 +1,6 @@
 ﻿namespace KaraokePlayer
 {
-    partial class OverlayForm
+    partial class KaraokeVideoOverlay
     {
         /// <summary>
         /// Required designer variable.

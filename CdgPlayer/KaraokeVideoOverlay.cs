@@ -5,14 +5,14 @@ using System.Windows.Forms;
 
 namespace KaraokePlayer
 {
-    public partial class OverlayForm : Form
+    public partial class KaraokeVideoOverlay : Form
     {
         private const int DwmwaTransitionsForcedisabled = 3;
         ContainerControl _parent;
 
-        public OverlayForm(ContainerControl parent)
+        public KaraokeVideoOverlay(ContainerControl parent)
         {
-            
+            var parentForm = parent.FindForm();
             InitializeComponent();
             Graphic.BackColor = Color.Transparent;
             _parent = parent;
@@ -24,7 +24,7 @@ namespace KaraokePlayer
             StartPosition = FormStartPosition.Manual;
             AutoScaleMode = AutoScaleMode.None;
             Show(parent);
-            parent.ParentForm.LocationChanged += Cover_LocationChanged;
+            parentForm.LocationChanged += Cover_LocationChanged;
             parent.LocationChanged += Cover_LocationChanged;
             parent.VisibleChanged += Cover_LocationChanged;
             parent.ClientSizeChanged += Cover_ClientSizeChanged;            
@@ -32,7 +32,7 @@ namespace KaraokePlayer
             if (Environment.OSVersion.Version.Major >= 6)
             {
                 var value = 1;
-                DwmSetWindowAttribute(parent.ParentForm.Handle, DwmwaTransitionsForcedisabled, ref value, 4);
+                DwmSetWindowAttribute(parentForm.Handle, DwmwaTransitionsForcedisabled, ref value, 4);
             }
             Location = parent.PointToScreen(Point.Empty);
             ClientSize = parent.ClientSize;
@@ -46,12 +46,14 @@ namespace KaraokePlayer
 
         private void Cover_LocationChanged(object sender, EventArgs e)
         {
-           Location = _parent.PointToScreen(Point.Empty);
+            ClientSize = _parent.ClientSize;
+            Location = _parent.PointToScreen(Point.Empty);
         }
 
         private void Cover_ClientSizeChanged(object sender, EventArgs e)
         {
             ClientSize = _parent.ClientSize;
+            Location = _parent.PointToScreen(Point.Empty);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -66,13 +68,6 @@ namespace KaraokePlayer
             }
             base.OnFormClosing(e);
         }
-
-        protected override void OnActivated(EventArgs e)
-        {
-            // Always keep the owner activated instead
-            BeginInvoke(new Action(() => Owner.Activate()));
-        }
-
         [DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hWnd, int attr, ref int value, int attrLen);
 

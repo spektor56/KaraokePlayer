@@ -16,21 +16,21 @@ namespace KaraokePlayer
     public partial class KaraokeVideoPlayer : UserControl
     {
         private GraphicsFile _cdgFile;
-        private OverlayForm _overlayForm;
+        private KaraokeVideoOverlay _overlayForm;
         private DateTime _startTime;
         private readonly System.Timers.Timer _lyricTimer = new System.Timers.Timer();
 
         public KaraokeVideoPlayer()
         {
             InitializeComponent();
-            _lyricTimer.Interval = 50;
+            _lyricTimer.Interval = 33;
             _lyricTimer.Elapsed += LyricTimerOnElapsed;
         }
 
         private void LyricTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             var picture = _cdgFile.RenderAtTime((long)(DateTime.Now - _startTime).TotalMilliseconds);
-            _overlayForm.Graphic.Image = picture;
+            BeginInvoke(new MethodInvoker(() => { _overlayForm.Graphic.Image = picture; }));
         }
 
         public async void Play(Uri file)
@@ -53,10 +53,7 @@ namespace KaraokePlayer
 
         private void KaraokeVideoPlayer_ParentChanged(object sender, EventArgs e)
         {
-            if (ParentForm != null)
-            {
-               _overlayForm = new OverlayForm(this);
-            }
+
         }
 
         private void vlcPlayer_VlcLibDirectoryNeeded(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
@@ -64,19 +61,12 @@ namespace KaraokePlayer
             e.VlcLibDirectory = new DirectoryInfo(@"lib\vlc\");
         }
 
-        private void vlcPlayer_DoubleClick(object sender, EventArgs e)
+        private void KaraokeVideoPlayer_Load(object sender, EventArgs e)
         {
-
-        }
-
-        private void KaraokeVideoPlayer_DoubleClick(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel1_DoubleClick(object sender, EventArgs e)
-        {
-
+            if (this.FindForm() != null)
+            {
+                _overlayForm = new KaraokeVideoOverlay(this);
+            }
         }
     }
 }
