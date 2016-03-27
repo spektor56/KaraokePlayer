@@ -1,6 +1,8 @@
-﻿namespace CdgPlayer
+﻿using CdgPlayer;
+
+namespace KaraokePlayer
 {
-    sealed partial class KaraokeVideoOverlay
+    partial class Form1
     {
         /// <summary>
         /// Required designer variable.
@@ -28,21 +30,31 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.karaokeVideoPlayer1 = new KaraokeVideoPlayer();
             this.SuspendLayout();
             // 
-            // KaraokeVideoOverlay
+            // karaokeVideoPlayer1
+            // 
+            this.karaokeVideoPlayer1.Location = new System.Drawing.Point(2, 12);
+            this.karaokeVideoPlayer1.Name = "karaokeVideoPlayer1";
+            this.karaokeVideoPlayer1.Size = new System.Drawing.Size(259, 220);
+            this.karaokeVideoPlayer1.TabIndex = 0;
+            // 
+            // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(284, 261);
-            this.Name = "KaraokeVideoOverlay";
-            this.Text = "4";
+            this.Controls.Add(this.karaokeVideoPlayer1);
+            this.Name = "Form1";
+            this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private KaraokeVideoPlayer karaokeVideoPlayer1;
     }
 }

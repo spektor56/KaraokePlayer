@@ -1,4 +1,4 @@
-﻿namespace KaraokePlayer
+﻿namespace CdgPlayer
 {
     partial class KaraokeVideoPlayer
     {
@@ -57,6 +57,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.Controls.Add(this.vlcPlayer);
             this.Name = "KaraokeVideoPlayer";
             this.Size = new System.Drawing.Size(428, 330);

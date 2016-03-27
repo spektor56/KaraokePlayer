@@ -47,6 +47,7 @@ namespace KaraokePlayer
             if (index != System.Windows.Forms.ListBox.NoMatches)
             {
                 karaokeVideoPlayer1.Play(new Uri(Path.ChangeExtension(((FileInfo)materialListBox1.Items[index]).FullName,".mp3")));
+                karaokeVideoPlayer1.ToggleFullScreen();
             }
         }
 

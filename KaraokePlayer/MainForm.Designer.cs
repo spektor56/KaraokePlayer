@@ -1,4 +1,6 @@
-﻿namespace KaraokePlayer
+﻿using CdgPlayer;
+
+namespace KaraokePlayer
 {
     partial class MainForm
     {
@@ -34,7 +36,7 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.browseDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.karaokeVideoPlayer1 = new KaraokePlayer.KaraokeVideoPlayer();
+            this.karaokeVideoPlayer1 = new KaraokeVideoPlayer();
             this.materialListBox1 = new MaterialSkin.Controls.MaterialListBox();
             this.materialSingleLineTextField1 = new MaterialSkin.Controls.MaterialSingleLineTextField();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using CdgLib.SubCode;
 
@@ -10,62 +10,76 @@ namespace CdgLib
 {
     public class Graphic
     {
+        private const int PacketSize = 24;
+
         private const int ColourTableSize = 16;
         private const int TileHeight = 12;
         private const int TileWidth = 6;
         public const int FullWidth = 300;
         public const int FullHeight = 216;
 
+        private readonly int[] _colourTable = new int[ColourTableSize];
+
+        private readonly Packet[] _packets;
+        private readonly byte[,] _pixelColours = new byte[FullHeight, FullWidth];
+
         private int _borderColourIndex;
 
         private int _horizonalOffset;
+        private int _readPosition;
         private int _verticalOffset;
-
-        private readonly int[] _colourTable = new int[ColourTableSize];
-        private readonly byte[,] _pixelColours = new byte[FullHeight, FullWidth];
-        private readonly int[,] _graphicData = new int[FullHeight, FullWidth];
 
         public Graphic(IEnumerable<Packet> packets)
         {
-            foreach (var packet in packets)
-            {
-                Process(packet);
-            }
+            _packets = packets.ToArray();
         }
 
-        public Bitmap ToBitmap()
+        public long Duration => _packets.Count()/PacketSize*1000/300;
+
+        private void Reset()
         {
-            RenderSurface();
-            Bitmap myBitmap;
-            using (var bitmapStream = new MemoryStream())
+            Array.Clear(_pixelColours, 0, _pixelColours.Length);
+            Array.Clear(_colourTable, 0, _colourTable.Length);
+            _readPosition = 0;
+        }
+
+        public Bitmap ToBitmap(long time)
+        {
+            //duration of one packet is 1/300 seconds (4 packets per sector, 75 sectors per second)
+            //p=t*3/10  t=p*10/3 t=milliseconds, p=packets
+            var numberOfSubCodePackets = (int) (time*3/10);
+            if (numberOfSubCodePackets < _readPosition)
             {
-                foreach (var colourValue in _graphicData)
+                Reset();
+            }
+            var packetsToRead = numberOfSubCodePackets - _readPosition;
+
+            for (var i = 0; i < packetsToRead; i++)
+            {
+                Process(_packets[_readPosition + i]);
+            }
+
+            _readPosition = numberOfSubCodePackets;
+
+            var graphicData = GetGraphicData();
+
+            var bitmap = new Bitmap(FullWidth, FullHeight, PixelFormat.Format32bppArgb);
+            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, FullWidth, FullHeight), ImageLockMode.WriteOnly,
+                bitmap.PixelFormat);
+            var offset = 0;
+            foreach (var colourValue in graphicData)
+            {
+                var colour = BitConverter.GetBytes(colourValue);
+                foreach (var bytes in colour)
                 {
-                    var colour = BitConverter.GetBytes(colourValue);
-                    bitmapStream.Write(colour, 0, 4);
+                    Marshal.WriteByte(bitmapData.Scan0, offset, bytes);
+                    offset++;
                 }
-                myBitmap = StreamToBitmap(bitmapStream, FullWidth, FullHeight);
             }
-            myBitmap.MakeTransparent(myBitmap.GetPixel(1, 1));
-    
-            return myBitmap;
-        }
+            bitmap.UnlockBits(bitmapData);
+            bitmap.MakeTransparent(bitmap.GetPixel(1, 1));
 
-        private Bitmap StreamToBitmap(Stream stream, int width, int height)
-        {
-            //create a new bitmap
-            var bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-            var bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-            stream.Seek(0, SeekOrigin.Begin);
-            //copy the stream of pixel
-            for (var n = 0; n <= stream.Length - 1; n++)
-            {
-                var myByte = new byte[1];
-                stream.Read(myByte, 0, 1);
-                Marshal.WriteByte(bmpData.Scan0, n, myByte[0]);
-            }
-            bmp.UnlockBits(bmpData);
-            return bmp;
+            return bitmap;
         }
 
         private void Process(Packet packet)
@@ -121,11 +135,11 @@ namespace CdgLib
 
                 //Set the preset colour for every pixel. Must be stored in 
                 //the pixel colour table indeces array
-                for (int rowIndex = 0; rowIndex < _pixelColours.GetLength(0); rowIndex++)
+                for (var rowIndex = 0; rowIndex < _pixelColours.GetLength(0); rowIndex++)
                 {
-                    for (int columnIndex = 0; columnIndex < _pixelColours.GetLength(1); columnIndex++)
+                    for (var columnIndex = 0; columnIndex < _pixelColours.GetLength(1); columnIndex++)
                     {
-                        _pixelColours[rowIndex, columnIndex] = (byte)colour;
+                        _pixelColours[rowIndex, columnIndex] = (byte) colour;
                     }
                 }
             }
@@ -147,12 +161,14 @@ namespace CdgLib
             {
                 for (columnIndex = 0; columnIndex < 6; columnIndex++)
                 {
-                    _pixelColours[rowIndex, columnIndex] = (byte)colour;
+                    _pixelColours[rowIndex, columnIndex] = (byte) colour;
                 }
 
-                for (columnIndex = _pixelColours.GetLength(1) - 6; columnIndex < _pixelColours.GetLength(1); columnIndex++)
+                for (columnIndex = _pixelColours.GetLength(1) - 6;
+                    columnIndex < _pixelColours.GetLength(1);
+                    columnIndex++)
                 {
-                    _pixelColours[rowIndex, columnIndex] = (byte)colour;
+                    _pixelColours[rowIndex, columnIndex] = (byte) colour;
                 }
             }
 
@@ -160,12 +176,12 @@ namespace CdgLib
             {
                 for (rowIndex = 0; rowIndex < 12; rowIndex++)
                 {
-                    _pixelColours[rowIndex, columnIndex] = (byte)colour;
+                    _pixelColours[rowIndex, columnIndex] = (byte) colour;
                 }
 
                 for (rowIndex = _pixelColours.GetLength(0) - 12; rowIndex < _pixelColours.GetLength(0); rowIndex++)
                 {
-                    _pixelColours[rowIndex, columnIndex] = (byte)colour;
+                    _pixelColours[rowIndex, columnIndex] = (byte) colour;
                 }
             }
         }
@@ -178,8 +194,8 @@ namespace CdgLib
                 //[---high byte---]   [---low byte----]
                 //7 6 5 4 3 2 1 0     7 6 5 4 3 2 1 0
                 //X X r r r r g g     X X g g b b b b
-                var highByte = packet.Data[2 * i];
-                var lowByte = packet.Data[2 * i + 1];
+                var highByte = packet.Data[2*i];
+                var lowByte = packet.Data[2*i + 1];
 
                 var red = (highByte & 0x3f) >> 2;
                 var green = ((highByte & 0x3) << 2) | ((lowByte & 0x3f) >> 4);
@@ -190,7 +206,7 @@ namespace CdgLib
                 green *= 17;
                 blue *= 17;
 
-                _colourTable[i + table*8] = Color.FromArgb(red, green, blue).ToArgb(); 
+                _colourTable[i + table*8] = Color.FromArgb(red, green, blue).ToArgb();
             }
         }
 
@@ -199,8 +215,8 @@ namespace CdgLib
         {
             var colour0 = packet.Data[0] & 0xf;
             var colour1 = packet.Data[1] & 0xf;
-            var rowIndex = (packet.Data[2] & 0x1f) * 12;
-            var columnIndex = (packet.Data[3] & 0x3f) * 6;
+            var rowIndex = (packet.Data[2] & 0x1f)*12;
+            var columnIndex = (packet.Data[3] & 0x3f)*6;
 
             if (rowIndex > FullHeight - TileHeight)
                 return;
@@ -219,7 +235,7 @@ namespace CdgLib
                 for (var j = 0; j <= 5; j++)
                 {
                     var pixel = (myByte >> (5 - j)) & 0x1;
-                    var newCol = 0;
+                    int newCol;
                     if (bXor)
                     {
                         //Tile Block XOR 
@@ -237,7 +253,7 @@ namespace CdgLib
                     //Set the pixel with the new colour. We set both the surfarray
                     //containing actual RGB values, as well as our array containing
                     //the colour indexes into our colour table. 
-                    _pixelColours[rowIndex + i, columnIndex + j] = (byte)newCol;
+                    _pixelColours[rowIndex + i, columnIndex + j] = (byte) newCol;
                 }
             }
         }
@@ -262,7 +278,7 @@ namespace CdgLib
 
 
             _horizonalOffset = horizontalOffset < 5 ? horizontalOffset : 5;
-            this._verticalOffset = verticalOffset < 11 ? verticalOffset : 11;
+            _verticalOffset = verticalOffset < 11 ? verticalOffset : 11;
 
             //Scroll Vertical - Calculate number of pixels
 
@@ -300,16 +316,15 @@ namespace CdgLib
             var temp = new byte[FullHeight + 1, FullWidth + 1];
             var vInc = verticalScrollPixels + FullHeight;
             var hInc = horizontalScrollPixels + FullWidth;
-            var rowIndex = 0;
-            //row index
-            var columnIndex = 0;
-            //column index
+            int rowIndex;
+            int columnIndex;
 
             for (rowIndex = 0; rowIndex <= FullHeight - 1; rowIndex++)
             {
                 for (columnIndex = 0; columnIndex <= FullWidth - 1; columnIndex++)
                 {
-                    temp[(rowIndex + vInc) % FullHeight, (columnIndex + hInc) % FullWidth] = _pixelColours[rowIndex, columnIndex];
+                    temp[(rowIndex + vInc)%FullHeight, (columnIndex + hInc)%FullWidth] =
+                        _pixelColours[rowIndex, columnIndex];
                 }
             }
 
@@ -326,7 +341,7 @@ namespace CdgLib
                     {
                         for (rowIndex = 0; rowIndex <= verticalScrollPixels - 1; rowIndex++)
                         {
-                            temp[rowIndex, columnIndex] = (byte)colour;
+                            temp[rowIndex, columnIndex] = (byte) colour;
                         }
                     }
                 }
@@ -336,7 +351,7 @@ namespace CdgLib
                     {
                         for (rowIndex = FullHeight + verticalScrollPixels; rowIndex <= FullHeight - 1; rowIndex++)
                         {
-                            temp[rowIndex, columnIndex] = (byte)colour;
+                            temp[rowIndex, columnIndex] = (byte) colour;
                         }
                     }
                 }
@@ -348,7 +363,7 @@ namespace CdgLib
                     {
                         for (rowIndex = 0; rowIndex <= FullHeight - 1; rowIndex++)
                         {
-                            temp[rowIndex, columnIndex] = (byte)colour;
+                            temp[rowIndex, columnIndex] = (byte) colour;
                         }
                     }
                 }
@@ -358,7 +373,7 @@ namespace CdgLib
                     {
                         for (rowIndex = 0; rowIndex <= FullHeight - 1; rowIndex++)
                         {
-                            temp[rowIndex, columnIndex] = (byte)colour;
+                            temp[rowIndex, columnIndex] = (byte) colour;
                         }
                     }
                 }
@@ -375,8 +390,9 @@ namespace CdgLib
             }
         }
 
-        private void RenderSurface()
+        private int[,] GetGraphicData()
         {
+            var graphicData = new int[FullHeight, FullWidth];
             for (var rowIndex = 0; rowIndex <= FullHeight - 1; rowIndex++)
             {
                 for (var columnIndex = 0; columnIndex <= FullWidth - 1; columnIndex++)
@@ -384,14 +400,16 @@ namespace CdgLib
                     if (rowIndex < TileHeight || rowIndex >= FullHeight - TileHeight || columnIndex < TileWidth ||
                         columnIndex >= FullWidth - TileWidth)
                     {
-                        _graphicData[rowIndex, columnIndex] = _colourTable[_borderColourIndex];
+                        graphicData[rowIndex, columnIndex] = _colourTable[_borderColourIndex];
                     }
                     else
                     {
-                        _graphicData[rowIndex, columnIndex] = _colourTable[_pixelColours[rowIndex + _verticalOffset, columnIndex + _horizonalOffset]];
+                        graphicData[rowIndex, columnIndex] =
+                            _colourTable[_pixelColours[rowIndex + _verticalOffset, columnIndex + _horizonalOffset]];
                     }
                 }
             }
+            return graphicData;
         }
     }
 }

@@ -3,21 +3,22 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace KaraokePlayer
+namespace CdgPlayer
 {
-    public partial class KaraokeVideoOverlay : Form
+    public sealed partial class KaraokeVideoOverlay : Form
     {
         private const int DwmwaTransitionsForcedisabled = 3;
-        ContainerControl _parent;
+        readonly ContainerControl _parent;
 
         public KaraokeVideoOverlay(ContainerControl parent)
         {
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             var parentForm = parent.FindForm();
             InitializeComponent();
-            Graphic.BackColor = Color.Transparent;
             _parent = parent;
-            BackColor = Color.FromArgb(1, 1, 1);
-            TransparencyKey = Color.FromArgb(1, 1, 1);
+            DoubleBuffered = true;
+            TransparencyKey = Color.FromArgb(27,27,27);
+            BackColor = Color.FromArgb(27, 27, 27);
             FormBorderStyle = FormBorderStyle.None;
             ControlBox = false;
             ShowInTaskbar = false;
@@ -37,6 +38,19 @@ namespace KaraokePlayer
             Location = parent.PointToScreen(Point.Empty);
             ClientSize = parent.ClientSize;
         }
+
+
+        private const int WS_EX_TRANSPARENT = 0x20;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle = cp.ExStyle | WS_EX_TRANSPARENT;
+                return cp;
+            }
+        }
+
 
         public sealed override Color BackColor
         {
@@ -70,17 +84,5 @@ namespace KaraokePlayer
         }
         [DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hWnd, int attr, ref int value, int attrLen);
-
-        private void Graphic_DoubleClick(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void OverlayForm_DoubleClick(object sender, EventArgs e)
-        {
-
-        }
-
-
     }
 }
