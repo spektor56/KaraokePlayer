@@ -35,6 +35,7 @@
             // vlcPlayer
             // 
             this.vlcPlayer.BackColor = System.Drawing.Color.Black;
+            this.vlcPlayer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.vlcPlayer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.vlcPlayer.Location = new System.Drawing.Point(0, 0);
             this.vlcPlayer.Name = "vlcPlayer";

@@ -26,7 +26,7 @@ namespace CdgLib
         private int _borderColourIndex;
 
         private int _horizonalOffset;
-        private int _readPosition;
+        private int _startPosition;
         private int _verticalOffset;
 
         public Graphic(IEnumerable<Packet> packets)
@@ -40,27 +40,29 @@ namespace CdgLib
         {
             Array.Clear(_pixelColours, 0, _pixelColours.Length);
             Array.Clear(_colourTable, 0, _colourTable.Length);
-            _readPosition = 0;
+            _startPosition = 0;
         }
 
         public Bitmap ToBitmap(long time)
         {
             //duration of one packet is 1/300 seconds (4 packets per sector, 75 sectors per second)
             //p=t*3/10  t=p*10/3 t=milliseconds, p=packets
-            var numberOfSubCodePackets = (int) (time*3/10);
-            if (numberOfSubCodePackets < _readPosition)
+            var endPosition = (int) (time*3/10);
+            if (endPosition < _startPosition)
             {
                 Reset();
             }
-            var packetsToRead = numberOfSubCodePackets - _readPosition;
+            var packetsToRead = endPosition - _startPosition;
 
             for (var i = 0; i < packetsToRead; i++)
             {
-                Process(_packets[_readPosition + i]);
+                if (_startPosition >= _packets.Length)
+                {
+                    break;
+                }
+                Process(_packets[_startPosition++]);
             }
-
-            _readPosition = numberOfSubCodePackets;
-
+            
             var graphicData = GetGraphicData();
 
             var bitmap = new Bitmap(FullWidth, FullHeight, PixelFormat.Format32bppArgb);

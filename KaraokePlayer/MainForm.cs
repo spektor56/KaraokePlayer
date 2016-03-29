@@ -25,7 +25,7 @@ namespace KaraokePlayer
 
         private void materialRaisedButton1_Click(object sender, System.EventArgs e)
         {
-            karaokeVideoPlayer1.Play(new Uri(@"D:\Karaoke\SF360 February 2016\SF360-01 - Charlie Puth - One Call Away\SF360-01 - Charlie Puth - One Call Away.mp3"));
+            karaokeVideoPlayer1.Play(new Uri(@"C:\Users\Brett.TRXDOMAIN\Downloads\MaryHadALittleLamb\MaryHadALittleLamb.mp3"));
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
