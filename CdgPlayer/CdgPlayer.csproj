@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CdgPlayer</RootNamespace>
     <AssemblyName>CdgPlayer</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -61,6 +61,10 @@
       <HintPath>..\packages\Vlc.DotNet.Forms.2.1.115\lib\net45\x86\Vlc.DotNet.Forms.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="xBRZNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\xBRZNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="KaraokeVideoOverlay.cs">
@@ -109,6 +113,9 @@
       <Project>{3203dfd2-da5b-47b3-b009-18dd9c401fc3}</Project>
       <Name>CdgLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="xBRZNet.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CdgLib", "CdgLib\CdgLib.csproj", "{3203DFD2-DA5B-47B3-B009-18DD9C401FC3}"
 EndProject
@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaraokePlayer", "KaraokePla
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CdgPlayer", "CdgPlayer\CdgPlayer.csproj", "{A5324295-6BD2-4415-92CD-6EA77D708E00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaraokePlayerWpf", "KaraokePlayerWpf\KaraokePlayerWpf.csproj", "{33759E37-E2C6-4293-86A1-D1FEFBB957A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CdgPlayerWpf", "CdgPlayerWpf\CdgPlayerWpf.csproj", "{40B6FC5F-E142-4D05-907D-F89DE7DAB4B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,14 @@ Global
 		{A5324295-6BD2-4415-92CD-6EA77D708E00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5324295-6BD2-4415-92CD-6EA77D708E00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5324295-6BD2-4415-92CD-6EA77D708E00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33759E37-E2C6-4293-86A1-D1FEFBB957A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33759E37-E2C6-4293-86A1-D1FEFBB957A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33759E37-E2C6-4293-86A1-D1FEFBB957A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33759E37-E2C6-4293-86A1-D1FEFBB957A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40B6FC5F-E142-4D05-907D-F89DE7DAB4B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40B6FC5F-E142-4D05-907D-F89DE7DAB4B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40B6FC5F-E142-4D05-907D-F89DE7DAB4B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40B6FC5F-E142-4D05-907D-F89DE7DAB4B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

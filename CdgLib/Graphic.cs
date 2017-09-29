@@ -11,7 +11,8 @@ namespace CdgLib
     public class Graphic
     {
         private const int PacketSize = 24;
-
+        private Bitmap _lastImage;
+        private int[,] _oldGraphicData;
         private const int ColourTableSize = 16;
         private const int TileHeight = 12;
         private const int TileWidth = 6;
@@ -64,10 +65,22 @@ namespace CdgLib
             }
             
             var graphicData = GetGraphicData();
+            if (_oldGraphicData != null)
+            {
+                var equal =
+                    graphicData.Rank == _oldGraphicData.Rank &&
+                    Enumerable.Range(0, graphicData.Rank)
+                        .All(dimension => graphicData.GetLength(dimension) == _oldGraphicData.GetLength(dimension)) &&
+                    graphicData.Cast<int>().SequenceEqual(_oldGraphicData.Cast<int>());
+                if(equal)
+                {
+                    return Extension.Clone(_lastImage);
+                }
+            }
 
-            var bitmap = new Bitmap(FullWidth, FullHeight, PixelFormat.Format32bppArgb);
-            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, FullWidth, FullHeight), ImageLockMode.WriteOnly,
-                bitmap.PixelFormat);
+            _lastImage = new Bitmap(FullWidth, FullHeight, PixelFormat.Format32bppArgb);
+            var bitmapData = _lastImage.LockBits(new Rectangle(0, 0, FullWidth, FullHeight), ImageLockMode.WriteOnly,
+                _lastImage.PixelFormat);
             var offset = 0;
             foreach (var colourValue in graphicData)
             {
@@ -78,10 +91,10 @@ namespace CdgLib
                     offset++;
                 }
             }
-            bitmap.UnlockBits(bitmapData);
-            bitmap.MakeTransparent(bitmap.GetPixel(1, 1));
-
-            return bitmap;
+            _lastImage.UnlockBits(bitmapData);
+            _lastImage.MakeTransparent(_lastImage.GetPixel(1, 1));
+            _oldGraphicData = graphicData;
+            return Extension.Clone(_lastImage);
         }
 
         private void Process(Packet packet)

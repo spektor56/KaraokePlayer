@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Timers;
 using System.Windows.Forms;
@@ -8,16 +9,27 @@ using CdgLib;
 using Vlc.DotNet.Core;
 using Vlc.DotNet.Forms;
 using Timer = System.Timers.Timer;
+using xBRZNet;
 
 namespace CdgPlayer
 {
     public partial class KaraokeVideoPlayer : UserControl
     {
+        private bool processing = false;
         private readonly Timer _lyricTimer = new Timer();
         private GraphicsFile _cdgFile;
         private bool _fullscreen;
         private KaraokeVideoOverlay _overlayForm;
         private DateTime _startTime;
+        private int iteration = 0;
+        
+        public event EventHandler SongFinished;
+        public void OnSongFinished()
+        {
+            EventHandler handler = SongFinished;
+            if (null != handler) handler(this, EventArgs.Empty);
+        }
+
 
         public KaraokeVideoPlayer()
         {
@@ -54,12 +66,29 @@ namespace CdgPlayer
 
         private void LyricTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            Bitmap resizedImage;
-            using (var picture = _cdgFile.RenderAtTime((long) (DateTime
-                .Now - _startTime).TotalMilliseconds))
+            if (!processing)
             {
-                resizedImage = ResizeBitmap(picture, _overlayForm.Width, _overlayForm.Height);
-                BeginInvoke(new MethodInvoker(() => { _overlayForm.BackgroundImage = resizedImage; }));
+                processing = true;
+                try
+                {
+                    var picture = _cdgFile.RenderAtTime((long) (DateTime
+                                                                    .Now - _startTime).TotalMilliseconds);
+
+                    const int scaleSize = 4;
+                    var scaledImage = new xBRZScaler().ScaleImage(picture, scaleSize);
+                    scaledImage.MakeTransparent(scaledImage.GetPixel(1, 1));
+                    /*
+                    if (iteration++ % 100 == 0)
+                    {
+                        scaledImage.Save(@"C:\Test\" + scaleSize + Guid.NewGuid() + ".bmp", ImageFormat.Bmp);
+                    }
+                    */
+                    BeginInvoke(new MethodInvoker(() => { _overlayForm.BackgroundImage = scaledImage; }));
+                }
+                finally
+                {
+                    processing = false;
+                }
             }
         }
 
@@ -137,6 +166,11 @@ namespace CdgPlayer
             {
                 _overlayForm = new KaraokeVideoOverlay(this);
             }
+        }
+
+        private void vlcPlayer_EndReached(object sender, VlcMediaPlayerEndReachedEventArgs e)
+        {
+            OnSongFinished();
         }
     }
 }

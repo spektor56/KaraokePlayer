@@ -35,11 +35,11 @@ namespace KaraokePlayer
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.browseDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.karaokeVideoPlayer1 = new KaraokeVideoPlayer();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.materialListBox1 = new MaterialSkin.Controls.MaterialListBox();
             this.materialSingleLineTextField1 = new MaterialSkin.Controls.MaterialSingleLineTextField();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.karaokeVideoPlayer1 = new CdgPlayer.KaraokeVideoPlayer();
+            this.browseDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -121,20 +121,24 @@ namespace KaraokePlayer
             // 
             this.splitContainer1.Panel2.Controls.Add(this.karaokeVideoPlayer1);
             this.splitContainer1.Size = new System.Drawing.Size(713, 458);
-            this.splitContainer1.SplitterDistance = 237;
+            this.splitContainer1.SplitterDistance = 236;
             this.splitContainer1.TabIndex = 6;
             // 
-            // browseDialog
+            // tableLayoutPanel2
             // 
-            this.browseDialog.SelectedPath = "D:\\Karaoke\\SF360 February 2016\\SF360-01 - Charlie Puth - One Call Away\\";
-            // 
-            // karaokeVideoPlayer1
-            // 
-            this.karaokeVideoPlayer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.karaokeVideoPlayer1.Location = new System.Drawing.Point(0, 0);
-            this.karaokeVideoPlayer1.Name = "karaokeVideoPlayer1";
-            this.karaokeVideoPlayer1.Size = new System.Drawing.Size(472, 458);
-            this.karaokeVideoPlayer1.TabIndex = 0;
+            this.tableLayoutPanel2.BackColor = System.Drawing.SystemColors.Control;
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.Controls.Add(this.materialListBox1, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.materialSingleLineTextField1, 0, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(236, 458);
+            this.tableLayoutPanel2.TabIndex = 7;
             // 
             // materialListBox1
             // 
@@ -154,7 +158,7 @@ namespace KaraokePlayer
             this.materialListBox1.MouseLocation = new System.Drawing.Point(-1, -1);
             this.materialListBox1.MouseState = MaterialSkin.MouseState.HOVER;
             this.materialListBox1.Name = "materialListBox1";
-            this.materialListBox1.Size = new System.Drawing.Size(231, 423);
+            this.materialListBox1.Size = new System.Drawing.Size(231, 428);
             this.materialListBox1.TabIndex = 5;
             this.materialListBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.materialListBox1_MouseDoubleClick);
             // 
@@ -177,21 +181,21 @@ namespace KaraokePlayer
             this.materialSingleLineTextField1.UseSystemPasswordChar = false;
             this.materialSingleLineTextField1.TextChanged += new System.EventHandler(this.materialSingleLineTextField1_TextChanged);
             // 
-            // tableLayoutPanel2
+            // karaokeVideoPlayer1
             // 
-            this.tableLayoutPanel2.BackColor = System.Drawing.SystemColors.Control;
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.Controls.Add(this.materialListBox1, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.materialSingleLineTextField1, 0, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(237, 458);
-            this.tableLayoutPanel2.TabIndex = 7;
+            this.karaokeVideoPlayer1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.karaokeVideoPlayer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.karaokeVideoPlayer1.Location = new System.Drawing.Point(0, 0);
+            this.karaokeVideoPlayer1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.karaokeVideoPlayer1.Name = "karaokeVideoPlayer1";
+            this.karaokeVideoPlayer1.Size = new System.Drawing.Size(473, 458);
+            this.karaokeVideoPlayer1.TabIndex = 0;
+            this.karaokeVideoPlayer1.SongFinished += new System.EventHandler(this.karaokeVideoPlayer1_SongFinished);
+            this.karaokeVideoPlayer1.Load += new System.EventHandler(this.karaokeVideoPlayer1_Load);
+            // 
+            // browseDialog
+            // 
+            this.browseDialog.SelectedPath = "E:\\Karaoke\\Sunfly";
             // 
             // MainForm
             // 
@@ -201,6 +205,7 @@ namespace KaraokePlayer
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "MainForm";
             this.Text = "Karaoke Player";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);

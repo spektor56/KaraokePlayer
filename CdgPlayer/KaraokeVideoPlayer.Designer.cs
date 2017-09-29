@@ -38,8 +38,9 @@
             this.vlcPlayer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.vlcPlayer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.vlcPlayer.Location = new System.Drawing.Point(0, 0);
+            this.vlcPlayer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.vlcPlayer.Name = "vlcPlayer";
-            this.vlcPlayer.Size = new System.Drawing.Size(428, 330);
+            this.vlcPlayer.Size = new System.Drawing.Size(642, 508);
             this.vlcPlayer.Spu = -1;
             this.vlcPlayer.TabIndex = 0;
             this.vlcPlayer.Text = "vlcControl1";
@@ -51,17 +52,19 @@
         "--no-video",
         "--verbose=2"};
             this.vlcPlayer.VlcLibDirectoryNeeded += new System.EventHandler<Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs>(this.vlcPlayer_VlcLibDirectoryNeeded);
+            this.vlcPlayer.EndReached += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs>(this.vlcPlayer_EndReached);
             this.vlcPlayer.Playing += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs>(this.vlcPlayer_Playing);
             this.vlcPlayer.TimeChanged += new System.EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(this.vlcPlayer_TimeChanged);
             // 
             // KaraokeVideoPlayer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.Controls.Add(this.vlcPlayer);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "KaraokeVideoPlayer";
-            this.Size = new System.Drawing.Size(428, 330);
+            this.Size = new System.Drawing.Size(642, 508);
             this.Load += new System.EventHandler(this.KaraokeVideoPlayer_Load);
             this.ParentChanged += new System.EventHandler(this.KaraokeVideoPlayer_ParentChanged);
             ((System.ComponentModel.ISupportInitialize)(this.vlcPlayer)).EndInit();
