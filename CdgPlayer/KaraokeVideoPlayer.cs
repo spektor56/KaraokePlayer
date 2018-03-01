@@ -40,7 +40,8 @@ namespace CdgPlayer
                 BackColor = Color.Transparent
             };
             panelDoubleClick.MouseClick += panelDoubleClick_MouseClick;
-            ;
+            
+            vlcPlayer.Video.AspectRatio = "16:9";
             vlcPlayer.Controls.Add(panelDoubleClick);
             panelDoubleClick.BringToFront();
 

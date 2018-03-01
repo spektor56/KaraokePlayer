@@ -32,9 +32,9 @@ namespace CdgPlayerWpf
         private bool processing = false;
         private readonly Timer _lyricTimer = new Timer();
         private GraphicsFile _cdgFile;
-        private bool _fullscreen;
+        //private bool _fullscreen;
         private DateTime _startTime;
-        private int iteration = 0;
+        //private int iteration = 0;
 
         public event EventHandler SongFinished;
         public void OnSongFinished()

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace KaraokePlayer
 {
@@ -14,6 +15,7 @@ namespace KaraokePlayer
     {
         private readonly MaterialSkinManager _materialSkinManager;
         private List<FileInfo> _fileList;
+        private DateTime _lastKey = DateTime.Now;
 
         public MainForm()
         {
@@ -58,13 +60,19 @@ namespace KaraokePlayer
             }
         }
 
-        private void materialSingleLineTextField1_TextChanged(object sender, EventArgs e)
+        private async void materialSingleLineTextField1_TextChanged(object sender, EventArgs e)
         {
-            if (materialSingleLineTextField1.Text.Length >= 3)
+            var text = materialSingleLineTextField1.Text;
+            await Task.Delay(1000);
+            
+            if (text == materialSingleLineTextField1.Text)
             {
                 materialListBox1.DataSource = _fileList.Where(
-                    file => Regex.IsMatch(file.Name, materialSingleLineTextField1.Text, RegexOptions.IgnoreCase)).ToList();
+                        file => Regex.IsMatch(file.Name, text,
+                            RegexOptions.IgnoreCase))
+                    .ToList();
             }
+            
         }
 
         private void MainForm_Load(object sender, EventArgs e)
