@@ -15,6 +15,8 @@ namespace CdgLib
         {
         }
 
+        public long Duration => _graphic.Duration;
+
         public bool Transparent => true;
 
         public static async Task<GraphicsFile> LoadAsync(string fileName)

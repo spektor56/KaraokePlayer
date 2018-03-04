@@ -10,9 +10,6 @@ namespace CdgLib
 {
     public class Graphic
     {
-        private const int PacketSize = 24;
-        private Bitmap _lastImage;
-        private int[,] _oldGraphicData;
         private const int ColourTableSize = 16;
         private const int TileHeight = 12;
         private const int TileWidth = 6;
@@ -35,7 +32,7 @@ namespace CdgLib
             _packets = packets.ToArray();
         }
 
-        public long Duration => _packets.Count()/PacketSize*1000/300;
+        public long Duration => _packets.Count()*10/3;
 
         private void Reset()
         {
@@ -55,32 +52,27 @@ namespace CdgLib
             }
             var packetsToRead = endPosition - _startPosition;
 
+            var processedPackets = 0;
             for (var i = 0; i < packetsToRead; i++)
             {
                 if (_startPosition >= _packets.Length)
                 {
                     break;
                 }
-                Process(_packets[_startPosition++]);
-            }
-            
-            var graphicData = GetGraphicData();
-            if (_oldGraphicData != null)
-            {
-                var equal =
-                    graphicData.Rank == _oldGraphicData.Rank &&
-                    Enumerable.Range(0, graphicData.Rank)
-                        .All(dimension => graphicData.GetLength(dimension) == _oldGraphicData.GetLength(dimension)) &&
-                    graphicData.Cast<int>().SequenceEqual(_oldGraphicData.Cast<int>());
-                if(equal)
-                {
-                    return Extension.Clone(_lastImage);
-                }
+                Process(_packets[_startPosition++], ref processedPackets);
             }
 
-            _lastImage = new Bitmap(FullWidth, FullHeight, PixelFormat.Format32bppArgb);
-            var bitmapData = _lastImage.LockBits(new Rectangle(0, 0, FullWidth, FullHeight), ImageLockMode.WriteOnly,
-                _lastImage.PixelFormat);
+            if (processedPackets == 0)
+            {
+                return null;
+            }
+
+            var graphicData = GetGraphicData();
+         
+
+            var image = new Bitmap(FullWidth, FullHeight, PixelFormat.Format32bppArgb);
+            var bitmapData = image.LockBits(new Rectangle(0, 0, FullWidth, FullHeight), ImageLockMode.WriteOnly,
+                image.PixelFormat);
             var offset = 0;
             foreach (var colourValue in graphicData)
             {
@@ -91,15 +83,19 @@ namespace CdgLib
                     offset++;
                 }
             }
-            _lastImage.UnlockBits(bitmapData);
-            _lastImage.MakeTransparent(_lastImage.GetPixel(1, 1));
-            _oldGraphicData = graphicData;
-            return Extension.Clone(_lastImage);
+            image.UnlockBits(bitmapData);
+            image.MakeTransparent(image.GetPixel(1, 1));
+            
+            return image;
         }
 
-        private void Process(Packet packet)
+        private void Process(Packet packet, ref int processedPackets)
         {
-            if (packet.Command != Command.Graphic) return;
+            if (packet.Command != Command.Graphic)
+            {
+                return;
+            }
+
             switch (packet.Instruction)
             {
                 case Instruction.MemoryPreset:
@@ -129,7 +125,11 @@ namespace CdgLib
                 case Instruction.TileBlockXor:
                     TileBlock(packet, true);
                     break;
+                default:
+                    return;
             }
+
+            processedPackets++;
         }
 
 
