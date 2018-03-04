@@ -47,11 +47,8 @@
             this.vlcPlayer.VlcLibDirectory = null;
             this.vlcPlayer.VlcMediaplayerOptions = new string[] {
         "--projectm-preset-path=lib\\presets",
-        "--projectm-width=1920",
-        "--projectm-height=1080",
-        "--projectm-meshx=80",
-        "--projectm-meshy=45",
-        "--projectm-texture-size=2048",
+        "--projectm-width=896",
+        "--projectm-height=504",
         "--audio-visual=projectm",
         "--effect-list=scope",
         "--no-video",
