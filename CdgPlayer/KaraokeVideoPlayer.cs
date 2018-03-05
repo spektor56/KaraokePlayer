@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows.Forms;
 using CdgLib;
@@ -21,10 +22,9 @@ namespace CdgPlayer
         private GraphicsFile _cdgFile;
         private bool _fullscreen;
         private KaraokeVideoOverlay _overlayForm;
-        private DateTime _startTime;
         private Stopwatch _stopWatch = new Stopwatch();
         private long _currentTime = 0;
-        private int iteration = 0;
+        //private int iteration = 0;
         
         public event EventHandler SongFinished;
         public void OnSongFinished()
@@ -50,7 +50,7 @@ namespace CdgPlayer
             panelDoubleClick.BringToFront();
 
 
-            _lyricTimer.Interval = 1;
+            _lyricTimer.Interval = 8;
             _lyricTimer.Elapsed += LyricTimerOnElapsed;
         }
 
@@ -82,11 +82,11 @@ namespace CdgPlayer
                     {
                         return;
                     }
-
-                    const int scaleSize = 4;
-                    var scaledImage = new xBRZScaler().ScaleImage(picture, scaleSize);
-                    scaledImage.MakeTransparent(scaledImage.GetPixel(1, 1));
                     
+                    const int scaleSize = 4;
+                    var scaledImage = ImageFilters.Xbrz.ScaleImage(picture, scaleSize);
+                    scaledImage.MakeTransparent(scaledImage.GetPixel(1, 1));
+
                     /*
                     if (iteration++ % 100 == 0)
                     {
@@ -94,6 +94,7 @@ namespace CdgPlayer
                         //scaledImage.Save(@"C:\Test\" + scaleSize + Guid.NewGuid() + ".bmp", ImageFormat.Bmp);
                     }
                     */
+
                     if (!Disposing && !IsDisposed)
                     {
                         BeginInvoke(new MethodInvoker(() =>
@@ -120,8 +121,6 @@ namespace CdgPlayer
         private void vlcPlayer_Playing(object sender, VlcMediaPlayerPlayingEventArgs e)
         {
             _stopWatch.Restart();
-            
-            //_startTime = DateTime.Now;
             _lyricTimer.Start();
         }
 
@@ -129,7 +128,6 @@ namespace CdgPlayer
         {
             _stopWatch.Restart();
             _currentTime = e.NewTime;
-            //_startTime = DateTime.Now.AddMilliseconds(-e.NewTime);
         }
 
         private void KaraokeVideoPlayer_ParentChanged(object sender, EventArgs e)
@@ -192,7 +190,7 @@ namespace CdgPlayer
 
         private void vlcPlayer_EndReached(object sender, VlcMediaPlayerEndReachedEventArgs e)
         {
-            _stopWatch.Stop();
+            _stopWatch.Reset();
             OnSongFinished();
         }
     }

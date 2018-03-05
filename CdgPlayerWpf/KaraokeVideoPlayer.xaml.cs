@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -29,6 +30,8 @@ namespace CdgPlayerWpf
     /// </summary>
     public partial class KaraokeVideoPlayer : UserControl
     {
+        private long _currentTime = 0;
+        private Stopwatch _stopWatch = new Stopwatch();
         private bool processing = false;
         private readonly Timer _lyricTimer = new Timer();
         private GraphicsFile _cdgFile;
@@ -48,7 +51,7 @@ namespace CdgPlayerWpf
         {
             InitializeComponent();
 
-            _lyricTimer.Interval = 33;
+            _lyricTimer.Interval = 8;
             _lyricTimer.Elapsed += LyricTimerOnElapsed;
         }
 
@@ -59,11 +62,14 @@ namespace CdgPlayerWpf
                 processing = true;
                 try
                 {
-                    var picture = _cdgFile.RenderAtTime((long)(DateTime
-                                                                   .Now - _startTime).TotalMilliseconds);
+                    var picture = _cdgFile.RenderAtTime(_stopWatch.ElapsedMilliseconds + _currentTime);
+                    if (picture == null)
+                    {
+                        return;
+                    }
 
                     const int scaleSize = 4;
-                    var scaledImage = new xBRZScaler().ScaleImage(picture, scaleSize);
+                    var scaledImage = ImageFilters.Xbrz.ScaleImage(picture, scaleSize);
                     scaledImage.MakeTransparent(scaledImage.GetPixel(1, 1));
                     /*
                     if (iteration++ % 100 == 0)
@@ -186,13 +192,14 @@ namespace CdgPlayerWpf
         */
         private void vlcPlayer_VideoSourceChanged(object sender, Meta.Vlc.Wpf.VideoSourceChangedEventArgs e)
         {
-            _startTime = DateTime.Now;
+            _stopWatch.Restart();
             _lyricTimer.Start();
         }
 
         private void vlcPlayer_TimeChanged_1(object sender, EventArgs e)
         {
-            _startTime = DateTime.Now.AddMilliseconds(-vlcPlayer.Time.Milliseconds);
+            _stopWatch.Restart();
+            _currentTime = vlcPlayer.Time.Milliseconds;
         }
     }
 }

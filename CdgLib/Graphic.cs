@@ -10,6 +10,8 @@ namespace CdgLib
 {
     public class Graphic
     {
+        
+
         private const int ColourTableSize = 16;
         private const int TileHeight = 12;
         private const int TileWidth = 6;
@@ -43,7 +45,7 @@ namespace CdgLib
 
         public Bitmap ToBitmap(long time)
         {
-            //duration of one packet is 1/300 seconds (4 packets per sector, 75 sectors per second)
+            //duration of one packet is 1/300 seconds (1000/300ms) (4 packets per sector, 75 sectors per second)
             //p=t*3/10  t=p*10/3 t=milliseconds, p=packets
             var endPosition = (int) (time*3/10);
             if (endPosition < _startPosition)
@@ -59,7 +61,11 @@ namespace CdgLib
                 {
                     break;
                 }
-                Process(_packets[_startPosition++], ref processedPackets);
+
+                if (Process(_packets[_startPosition++]))
+                {
+                    processedPackets++;
+                }
             }
 
             if (processedPackets == 0)
@@ -89,53 +95,57 @@ namespace CdgLib
             return image;
         }
 
-        private void Process(Packet packet, ref int processedPackets)
+        private bool Process(Packet packet)
         {
             if (packet.Command != Command.Graphic)
             {
-                return;
+                return false;
             }
+
+            bool hasChanges;
 
             switch (packet.Instruction)
             {
                 case Instruction.MemoryPreset:
-                    MemoryPreset(packet);
+                    hasChanges = MemoryPreset(packet);
                     break;
                 case Instruction.BorderPreset:
-                    BorderPreset(packet);
+                    hasChanges = BorderPreset(packet);
                     break;
                 case Instruction.TileBlockNormal:
-                    TileBlock(packet, false);
+                    hasChanges = TileBlock(packet, false);
                     break;
                 case Instruction.ScrollPreset:
-                    Scroll(packet, false);
+                    hasChanges = Scroll(packet, false);
                     break;
                 case Instruction.ScrollCopy:
-                    Scroll(packet, true);
-                    break;
-                case Instruction.DefineTransparentColor:
-                    DefineTransparentColour(packet);
+                    hasChanges = Scroll(packet, true);
                     break;
                 case Instruction.LoadColorTableLower:
-                    LoadColorTable(packet, 0);
+                    hasChanges = LoadColorTable(packet, 0);
                     break;
                 case Instruction.LoadColorTableUpper:
-                    LoadColorTable(packet, 1);
+                    hasChanges = LoadColorTable(packet, 1);
                     break;
                 case Instruction.TileBlockXor:
-                    TileBlock(packet, true);
+                    hasChanges = TileBlock(packet, true);
                     break;
                 default:
-                    return;
+                    return false;
             }
 
-            processedPackets++;
+            return hasChanges;
         }
 
 
-        private void MemoryPreset(Packet packet)
+        private bool MemoryPreset(Packet packet)
         {
+            bool hasChanges = false;
             var colour = packet.Data[0] & 0xf;
+            if (_borderColourIndex != colour)
+            {
+                hasChanges = true;
+            }
             _borderColourIndex = colour;
             var repeat = packet.Data[1] & 0xf;
 
@@ -154,18 +164,29 @@ namespace CdgLib
                 {
                     for (var columnIndex = 0; columnIndex < _pixelColours.GetLength(1); columnIndex++)
                     {
-                        _pixelColours[rowIndex, columnIndex] = (byte) colour;
+                        if (_pixelColours[rowIndex, columnIndex] != (byte) colour)
+                        {
+                            hasChanges = true;
+                        }
+                        _pixelColours[rowIndex, columnIndex] = (byte)colour;
                     }
                 }
             }
+
+            return hasChanges;
         }
 
-        private void BorderPreset(Packet packet)
+        private bool BorderPreset(Packet packet)
         {
+            bool hasChanges = false;
             int rowIndex;
             int columnIndex;
 
             var colour = packet.Data[0] & 0xf;
+            if (_borderColourIndex != colour)
+            {
+                hasChanges = true;
+            }
             _borderColourIndex = colour;
 
             //The border area is the area contained with a rectangle 
@@ -176,14 +197,22 @@ namespace CdgLib
             {
                 for (columnIndex = 0; columnIndex < 6; columnIndex++)
                 {
-                    _pixelColours[rowIndex, columnIndex] = (byte) colour;
+                    if (_pixelColours[rowIndex, columnIndex] != (byte) colour)
+                    {
+                        hasChanges = true;
+                    }
+                    _pixelColours[rowIndex, columnIndex] = (byte)colour;
                 }
 
                 for (columnIndex = _pixelColours.GetLength(1) - 6;
                     columnIndex < _pixelColours.GetLength(1);
                     columnIndex++)
                 {
-                    _pixelColours[rowIndex, columnIndex] = (byte) colour;
+                    if (_pixelColours[rowIndex, columnIndex] != (byte)colour)
+                    {
+                        hasChanges = true;
+                    }
+                    _pixelColours[rowIndex, columnIndex] = (byte)colour;
                 }
             }
 
@@ -191,26 +220,38 @@ namespace CdgLib
             {
                 for (rowIndex = 0; rowIndex < 12; rowIndex++)
                 {
-                    _pixelColours[rowIndex, columnIndex] = (byte) colour;
+                    if (_pixelColours[rowIndex, columnIndex] != (byte)colour)
+                    {
+                        hasChanges = true;
+                    }
+                    _pixelColours[rowIndex, columnIndex] = (byte)colour;
                 }
 
                 for (rowIndex = _pixelColours.GetLength(0) - 12; rowIndex < _pixelColours.GetLength(0); rowIndex++)
                 {
-                    _pixelColours[rowIndex, columnIndex] = (byte) colour;
+                    if (_pixelColours[rowIndex, columnIndex] != (byte)colour)
+                    {
+                        hasChanges = true;
+                    }
+                    _pixelColours[rowIndex, columnIndex] = (byte)colour;
                 }
             }
+
+            return hasChanges;
         }
 
 
-        private void LoadColorTable(Packet packet, int table)
+        private bool LoadColorTable(Packet packet, int table)
         {
+            bool hasChanges = false;
+
             for (var i = 0; i < 8; i++)
             {
                 //[---high byte---]   [---low byte----]
                 //7 6 5 4 3 2 1 0     7 6 5 4 3 2 1 0
                 //X X r r r r g g     X X g g b b b b
-                var highByte = packet.Data[2*i];
-                var lowByte = packet.Data[2*i + 1];
+                var highByte = packet.Data[2 * i];
+                var lowByte = packet.Data[2 * i + 1];
 
                 var red = (highByte & 0x3f) >> 2;
                 var green = ((highByte & 0x3) << 2) | ((lowByte & 0x3f) >> 4);
@@ -221,22 +262,32 @@ namespace CdgLib
                 green *= 17;
                 blue *= 17;
 
-                _colourTable[i + table*8] = Color.FromArgb(red, green, blue).ToArgb();
+                var colour = Color.FromArgb(red, green, blue).ToArgb();
+
+                if (_colourTable[i + table * 8] != colour)
+                {
+                    hasChanges = true;
+                }
+                _colourTable[i + table * 8] = colour;
             }
+
+            return hasChanges;
         }
 
 
-        private void TileBlock(Packet packet, bool bXor)
+        private bool TileBlock(Packet packet, bool bXor)
         {
+            bool hasChanges = false;
+
             var colour0 = packet.Data[0] & 0xf;
             var colour1 = packet.Data[1] & 0xf;
-            var rowIndex = (packet.Data[2] & 0x1f)*12;
-            var columnIndex = (packet.Data[3] & 0x3f)*6;
+            var rowIndex = (packet.Data[2] & 0x1f) * 12;
+            var columnIndex = (packet.Data[3] & 0x3f) * 6;
 
             if (rowIndex > FullHeight - TileHeight)
-                return;
+                return hasChanges;
             if (columnIndex > FullWidth - TileWidth)
-                return;
+                return hasChanges;
 
             //Set the pixel array for each of the pixels in the 12x6 tile.
             //Normal = Set the colour to either colour0 or colour1 depending
@@ -268,9 +319,15 @@ namespace CdgLib
                     //Set the pixel with the new colour. We set both the surfarray
                     //containing actual RGB values, as well as our array containing
                     //the colour indexes into our colour table. 
-                    _pixelColours[rowIndex + i, columnIndex + j] = (byte) newCol;
+                    if (_pixelColours[rowIndex + i, columnIndex + j] != (byte) newCol)
+                    {
+                        hasChanges = true;
+                    }
+                    _pixelColours[rowIndex + i, columnIndex + j] = (byte)newCol;
                 }
             }
+
+            return hasChanges;
         }
 
         private void DefineTransparentColour(Packet packet)
@@ -279,8 +336,10 @@ namespace CdgLib
         }
 
 
-        private void Scroll(Packet packet, bool copy)
+        private bool Scroll(Packet packet, bool copy)
         {
+            bool hasChanges = false;
+
             //Decode the scroll command parameters
             var colour = packet.Data[0] & 0xf;
             var horizontalScroll = packet.Data[1] & 0x3f;
@@ -291,9 +350,16 @@ namespace CdgLib
             var verticalScrollCommand = (verticalScroll & 0x30) >> 4;
             var verticalOffset = verticalScroll & 0xf;
 
+            var horizonalOffsetOld = _horizonalOffset;
+            var verticalOffsetOld = _verticalOffset;
 
             _horizonalOffset = horizontalOffset < 5 ? horizontalOffset : 5;
             _verticalOffset = verticalOffset < 11 ? verticalOffset : 11;
+
+            if (horizonalOffsetOld != _horizonalOffset || verticalOffsetOld != _verticalOffset)
+            {
+                hasChanges = true;
+            }
 
             //Scroll Vertical - Calculate number of pixels
 
@@ -323,7 +389,7 @@ namespace CdgLib
 
             if (horizontalScrollPixels == 0 && verticalScrollPixels == 0)
             {
-                return;
+                return true;
             }
 
             //Perform the actual scroll.
@@ -338,7 +404,7 @@ namespace CdgLib
             {
                 for (columnIndex = 0; columnIndex <= FullWidth - 1; columnIndex++)
                 {
-                    temp[(rowIndex + vInc)%FullHeight, (columnIndex + hInc)%FullWidth] =
+                    temp[(rowIndex + vInc) % FullHeight, (columnIndex + hInc) % FullWidth] =
                         _pixelColours[rowIndex, columnIndex];
                 }
             }
@@ -356,7 +422,7 @@ namespace CdgLib
                     {
                         for (rowIndex = 0; rowIndex <= verticalScrollPixels - 1; rowIndex++)
                         {
-                            temp[rowIndex, columnIndex] = (byte) colour;
+                            temp[rowIndex, columnIndex] = (byte)colour;
                         }
                     }
                 }
@@ -366,7 +432,7 @@ namespace CdgLib
                     {
                         for (rowIndex = FullHeight + verticalScrollPixels; rowIndex <= FullHeight - 1; rowIndex++)
                         {
-                            temp[rowIndex, columnIndex] = (byte) colour;
+                            temp[rowIndex, columnIndex] = (byte)colour;
                         }
                     }
                 }
@@ -378,7 +444,7 @@ namespace CdgLib
                     {
                         for (rowIndex = 0; rowIndex <= FullHeight - 1; rowIndex++)
                         {
-                            temp[rowIndex, columnIndex] = (byte) colour;
+                            temp[rowIndex, columnIndex] = (byte)colour;
                         }
                     }
                 }
@@ -388,7 +454,7 @@ namespace CdgLib
                     {
                         for (rowIndex = 0; rowIndex <= FullHeight - 1; rowIndex++)
                         {
-                            temp[rowIndex, columnIndex] = (byte) colour;
+                            temp[rowIndex, columnIndex] = (byte)colour;
                         }
                     }
                 }
@@ -400,9 +466,15 @@ namespace CdgLib
             {
                 for (columnIndex = 0; columnIndex <= FullWidth - 1; columnIndex++)
                 {
+                    if (_pixelColours[rowIndex, columnIndex] != temp[rowIndex, columnIndex])
+                    {
+                        hasChanges = true;
+                    }
                     _pixelColours[rowIndex, columnIndex] = temp[rowIndex, columnIndex];
                 }
             }
+
+            return hasChanges;
         }
 
         private int[,] GetGraphicData()

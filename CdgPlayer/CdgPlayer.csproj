@@ -110,9 +110,15 @@
       <Project>{3203dfd2-da5b-47b3-b009-18dd9c401fc3}</Project>
       <Name>CdgLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ImageFilters\ImageFilters.csproj">
+      <Project>{ffe75762-f853-4ec8-9594-7bbdb4b8d87d}</Project>
+      <Name>ImageFilters</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="xBRZNet.dll" />
+    <None Include="Resources\xbrz.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -35,7 +35,6 @@ namespace CdgLib
 
         public Bitmap RenderAtTime(long time)
         {
-
             return _graphic.ToBitmap(time);
         }
     }

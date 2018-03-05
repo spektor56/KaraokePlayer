@@ -47,6 +47,9 @@ namespace KaraokePlayer
                 materialListBox1.DataSource = _fileList;
                 materialListBox1.DisplayMember = "Name";
 
+                lblSongs.Text = string.Format("({0:N0} / {1:N0}) Songs Displayed",
+                    ((List<FileInfo>)materialListBox1.DataSource).Count, _fileList.Count);
+
             }
         }
 
@@ -67,10 +70,23 @@ namespace KaraokePlayer
             
             if (text == materialSingleLineTextField1.Text)
             {
-                materialListBox1.DataSource = _fileList.Where(
-                        file => Regex.IsMatch(file.Name, text,
-                            RegexOptions.IgnoreCase))
-                    .ToList();
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    materialListBox1.DataSource = _fileList.ToList();
+
+                    lblSongs.Text = string.Format("({0:N0} / {1:N0}) Songs Displayed",
+                        ((List<FileInfo>)materialListBox1.DataSource).Count, _fileList.Count);
+                }
+                else
+                {
+                    materialListBox1.DataSource = _fileList.Where(
+                            file => Regex.IsMatch(file.Name, text,
+                                RegexOptions.IgnoreCase))
+                        .ToList();
+
+                    lblSongs.Text = string.Format("({0:N0} / {1:N0}) Songs Displayed",
+                        ((List<FileInfo>) materialListBox1.DataSource).Count, _fileList.Count);
+                }
             }
             
         }
@@ -81,6 +97,9 @@ namespace KaraokePlayer
             _fileList = files.Select(file => new FileInfo(file)).OrderBy(file => file.Name).ToList();
             materialListBox1.DataSource = _fileList;
             materialListBox1.DisplayMember = "Name";
+
+            lblSongs.Text = string.Format("({0:N0} / {1:N0}) Songs Displayed",
+                ((List<FileInfo>)materialListBox1.DataSource).Count, _fileList.Count);
         }
 
         private void karaokeVideoPlayer1_SongFinished(object sender, EventArgs e)
