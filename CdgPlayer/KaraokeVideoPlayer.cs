@@ -11,7 +11,6 @@ using CdgLib;
 using Vlc.DotNet.Core;
 using Vlc.DotNet.Forms;
 using Timer = System.Timers.Timer;
-using xBRZNet;
 
 namespace CdgPlayer
 {

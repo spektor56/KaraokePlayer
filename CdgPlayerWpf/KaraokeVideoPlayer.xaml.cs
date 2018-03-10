@@ -19,7 +19,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using CdgLib;
-using xBRZNet;
 using Path = System.IO.Path;
 using Timer = System.Timers.Timer;
 
@@ -36,7 +35,7 @@ namespace CdgPlayerWpf
         private readonly Timer _lyricTimer = new Timer();
         private GraphicsFile _cdgFile;
         //private bool _fullscreen;
-        private DateTime _startTime;
+       
         //private int iteration = 0;
 
         public event EventHandler SongFinished;
