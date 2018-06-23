@@ -160,7 +160,7 @@ namespace KaraokePlayer
                 ((List<FileInfo>)mlbSongList.DataSource).Count, _fileList.Count);
 
             string apiKey = System.Configuration.ConfigurationManager.AppSettings["ApiKey"];
-
+            /*
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
                 ApiKey = apiKey,
@@ -197,6 +197,7 @@ namespace KaraokePlayer
                         break;
                 }
             }
+            */
         }
 
         private void mlbQueue_KeyDown(object sender, KeyEventArgs e)
