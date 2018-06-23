@@ -26,13 +26,27 @@ namespace KaraokePlayer
 
         public MainForm()
         {
-            
+            KeyPreview = true;
             InitializeComponent();
+            
             // Initialize MaterialSkinManager
             _materialSkinManager = MaterialSkinManager.Instance;
             _materialSkinManager.AddFormToManage(this);
             //_materialSkinManager.Theme = new DarkTheme();
             _materialSkinManager.ColorScheme = new ColorScheme(Primary.Green600, Primary.Green700, Primary.Green200, Accent.Red100, TextShade.WHITE);
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (!materialSingleLineTextField1.ContainsFocus)
+            {
+                if (keyData == Keys.Enter || keyData == Keys.Space)
+                {
+                    mediaPlayer.TogglePause();
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private void materialRaisedButton1_Click(object sender, System.EventArgs e)
@@ -59,9 +73,8 @@ namespace KaraokePlayer
         {
             if (browseDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-
-                var files = System.IO.Directory.GetFiles(browseDialog.SelectedPath, "*.cdg", searchOption: System.IO.SearchOption.AllDirectories);
-                _fileList = files.Select(file => new FileInfo(file)).ToList();
+                var di = new DirectoryInfo(browseDialog.SelectedPath);
+                _fileList = di.GetFiles("*.cdg", SearchOption.AllDirectories).OrderBy(file => file.Name).ToList();
                 mlbSongList.DataSource = _fileList;
                 mlbSongList.DisplayMember = "Name";
 
@@ -110,6 +123,8 @@ namespace KaraokePlayer
             
         }
 
+
+
         private async void MainForm_Load(object sender, EventArgs e)
         {
             playToolStripMenuItem.MouseDown += (o, args) => {
@@ -134,9 +149,8 @@ namespace KaraokePlayer
                     //karaokeVideoPlayer1.ToggleFullScreen();
                 }
             };
-
-            var files = System.IO.Directory.GetFiles(browseDialog.SelectedPath, "*.cdg", searchOption: System.IO.SearchOption.AllDirectories);
-            _fileList = files.Select(file => new FileInfo(file)).OrderBy(file => file.Name).ToList();
+            var di = new DirectoryInfo(browseDialog.SelectedPath);
+            _fileList = di.GetFiles("*.cdg", SearchOption.AllDirectories).GroupBy(file => file.Name.ToUpper()).Select(file => file.FirstOrDefault()).OrderBy(file => file.Name).ToList();
             mlbSongList.DataSource = _fileList;
             mlbSongList.DisplayMember = "Name";
             mlbQueue.DataSource = _queue;
@@ -311,6 +325,16 @@ namespace KaraokePlayer
             {
                 _queue.RemoveAt(index);
             }
+        }
+
+        private void btnPause_Click(object sender, EventArgs e)
+        {
+            mediaPlayer.TogglePause();
+        }
+
+        private void btnPlay_ChangeUICues(object sender, UICuesEventArgs e)
+        {
+
         }
     }
 }

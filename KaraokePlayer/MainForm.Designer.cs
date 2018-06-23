@@ -38,19 +38,20 @@ namespace KaraokePlayer
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.mlbSongList = new MaterialSkin.Controls.MaterialListBox();
+            this.cmsSongList = new MaterialSkin.Controls.MaterialContextMenuStrip();
+            this.playToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addToQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.materialSingleLineTextField1 = new MaterialSkin.Controls.MaterialSingleLineTextField();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.mediaPlayer = new CdgPlayer.KaraokeVideoPlayer();
             this.mlbQueue = new MaterialSkin.Controls.MaterialListBox();
-            this.browseDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.lblSongs = new System.Windows.Forms.Label();
-            this.lblQueue = new System.Windows.Forms.Label();
-            this.cmsSongList = new MaterialSkin.Controls.MaterialContextMenuStrip();
-            this.playToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addToQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsQueue = new MaterialSkin.Controls.MaterialContextMenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.browseDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.lblSongs = new System.Windows.Forms.Label();
+            this.lblQueue = new System.Windows.Forms.Label();
+            this.btnPause = new MaterialSkin.Controls.MaterialRaisedButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -58,11 +59,11 @@ namespace KaraokePlayer
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.cmsSongList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.cmsSongList.SuspendLayout();
             this.cmsQueue.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,6 +91,7 @@ namespace KaraokePlayer
             this.flowLayoutPanel1.AutoSize = true;
             this.flowLayoutPanel1.BackColor = System.Drawing.Color.Transparent;
             this.flowLayoutPanel1.Controls.Add(this.btnPlay);
+            this.flowLayoutPanel1.Controls.Add(this.btnPause);
             this.flowLayoutPanel1.Controls.Add(this.btnBrowse);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
@@ -114,6 +116,7 @@ namespace KaraokePlayer
             this.btnPlay.Text = "Play";
             this.btnPlay.UseVisualStyleBackColor = true;
             this.btnPlay.Click += new System.EventHandler(this.materialRaisedButton1_Click);
+            this.btnPlay.ChangeUICues += new System.Windows.Forms.UICuesEventHandler(this.btnPlay_ChangeUICues);
             // 
             // btnBrowse
             // 
@@ -122,7 +125,7 @@ namespace KaraokePlayer
             this.btnBrowse.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnBrowse.Depth = 0;
             this.btnBrowse.Icon = null;
-            this.btnBrowse.Location = new System.Drawing.Point(1107, 3);
+            this.btnBrowse.Location = new System.Drawing.Point(1037, 3);
             this.btnBrowse.MouseState = MaterialSkin.MouseState.HOVER;
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Primary = true;
@@ -189,6 +192,29 @@ namespace KaraokePlayer
             this.mlbSongList.TabIndex = 5;
             this.mlbSongList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.materialListBox1_MouseDoubleClick);
             this.mlbSongList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mlbSongList_MouseDown);
+            // 
+            // cmsSongList
+            // 
+            this.cmsSongList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.cmsSongList.Depth = 0;
+            this.cmsSongList.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.playToolStripMenuItem,
+            this.addToQueueToolStripMenuItem});
+            this.cmsSongList.MouseState = MaterialSkin.MouseState.HOVER;
+            this.cmsSongList.Name = "contextMenuStrip1";
+            this.cmsSongList.Size = new System.Drawing.Size(147, 48);
+            // 
+            // playToolStripMenuItem
+            // 
+            this.playToolStripMenuItem.Name = "playToolStripMenuItem";
+            this.playToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.playToolStripMenuItem.Text = "Play";
+            // 
+            // addToQueueToolStripMenuItem
+            // 
+            this.addToQueueToolStripMenuItem.Name = "addToQueueToolStripMenuItem";
+            this.addToQueueToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.addToQueueToolStripMenuItem.Text = "Add to queue";
             // 
             // materialSingleLineTextField1
             // 
@@ -267,9 +293,34 @@ namespace KaraokePlayer
             this.mlbQueue.Move += new System.EventHandler(this.mlbQueue_Move);
             this.mlbQueue.Resize += new System.EventHandler(this.mlbQueue_Resize);
             // 
+            // cmsQueue
+            // 
+            this.cmsQueue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.cmsQueue.Depth = 0;
+            this.cmsQueue.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.toolStripMenuItem2});
+            this.cmsQueue.MouseState = MaterialSkin.MouseState.HOVER;
+            this.cmsQueue.Name = "contextMenuStrip1";
+            this.cmsQueue.Size = new System.Drawing.Size(118, 48);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem1.Text = "Play";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItem2.Text = "Remove";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
             // browseDialog
             // 
-            this.browseDialog.SelectedPath = "E:\\Karaoke\\Sunfly\\Sunfly Hits\\SF383";
+            this.browseDialog.SelectedPath = "D:\\NewKaraoke\\SFGD062 + SFGD063 (REQ) - KaeaokeRG\\SFGD062";
             // 
             // lblSongs
             // 
@@ -291,53 +342,22 @@ namespace KaraokePlayer
             this.lblQueue.TabIndex = 7;
             this.lblQueue.Text = "Song Queue";
             // 
-            // cmsSongList
+            // btnPause
             // 
-            this.cmsSongList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.cmsSongList.Depth = 0;
-            this.cmsSongList.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.playToolStripMenuItem,
-            this.addToQueueToolStripMenuItem});
-            this.cmsSongList.MouseState = MaterialSkin.MouseState.HOVER;
-            this.cmsSongList.Name = "contextMenuStrip1";
-            this.cmsSongList.Size = new System.Drawing.Size(147, 48);
-            // 
-            // playToolStripMenuItem
-            // 
-            this.playToolStripMenuItem.Name = "playToolStripMenuItem";
-            this.playToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.playToolStripMenuItem.Text = "Play";
-            // 
-            // addToQueueToolStripMenuItem
-            // 
-            this.addToQueueToolStripMenuItem.Name = "addToQueueToolStripMenuItem";
-            this.addToQueueToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.addToQueueToolStripMenuItem.Text = "Add to queue";
-            // 
-            // cmsQueue
-            // 
-            this.cmsQueue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.cmsQueue.Depth = 0;
-            this.cmsQueue.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1,
-            this.toolStripMenuItem2});
-            this.cmsQueue.MouseState = MaterialSkin.MouseState.HOVER;
-            this.cmsQueue.Name = "contextMenuStrip1";
-            this.cmsQueue.Size = new System.Drawing.Size(153, 70);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem1.Text = "Play";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem2.Text = "Remove";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            this.btnPause.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPause.AutoSize = true;
+            this.btnPause.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnPause.Depth = 0;
+            this.btnPause.Icon = null;
+            this.btnPause.Location = new System.Drawing.Point(1119, 3);
+            this.btnPause.MouseState = MaterialSkin.MouseState.HOVER;
+            this.btnPause.Name = "btnPause";
+            this.btnPause.Primary = true;
+            this.btnPause.Size = new System.Drawing.Size(64, 36);
+            this.btnPause.TabIndex = 3;
+            this.btnPause.Text = "Pause";
+            this.btnPause.UseVisualStyleBackColor = true;
+            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
             // 
             // MainForm
             // 
@@ -362,11 +382,11 @@ namespace KaraokePlayer
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.cmsSongList.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.cmsSongList.ResumeLayout(false);
             this.cmsQueue.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -394,5 +414,6 @@ namespace KaraokePlayer
         private MaterialSkin.Controls.MaterialContextMenuStrip cmsQueue;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private MaterialSkin.Controls.MaterialRaisedButton btnPause;
     }
 }

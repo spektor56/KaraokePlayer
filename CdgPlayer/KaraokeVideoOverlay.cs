@@ -12,6 +12,7 @@ namespace CdgPlayer
 
         public KaraokeVideoOverlay(ContainerControl parent)
         {
+            KeyPreview = true;
             this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             var parentForm = parent.FindForm();
             InitializeComponent();
@@ -39,6 +40,22 @@ namespace CdgPlayer
             ClientSize = parent.ClientSize;
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (((KaraokeVideoPlayer) _parent).FullScreen)
+            {
+                if (keyData == Keys.Escape)
+                {
+                    ((KaraokeVideoPlayer) _parent).ToggleFullScreen();
+                }
+                else if (keyData == Keys.Enter || keyData == Keys.Space)
+                {
+                    ((KaraokeVideoPlayer) _parent).TogglePause();
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
 
         private const int WS_EX_TRANSPARENT = 0x20;
         protected override CreateParams CreateParams

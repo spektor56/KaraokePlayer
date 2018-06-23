@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Timers;
@@ -23,8 +24,11 @@ namespace CdgPlayer
         private KaraokeVideoOverlay _overlayForm;
         private Stopwatch _stopWatch = new Stopwatch();
         private long _currentTime = 0;
+        private long _lastRenderTime = -1;
         //private int iteration = 0;
         
+        public bool FullScreen => _fullscreen;
+
         public event EventHandler SongFinished;
         public void OnSongFinished()
         {
@@ -32,22 +36,20 @@ namespace CdgPlayer
             if (null != handler) handler(this, EventArgs.Empty);
         }
 
-
         public KaraokeVideoPlayer()
         {
-            
             InitializeComponent();
+            
             var panelDoubleClick = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = Color.Transparent
             };
             panelDoubleClick.MouseClick += panelDoubleClick_MouseClick;
-            
+
             //vlcPlayer.Video.AspectRatio = "16:9";
             vlcPlayer.Controls.Add(panelDoubleClick);
             panelDoubleClick.BringToFront();
-
 
             _lyricTimer.Interval = 8;
             _lyricTimer.Elapsed += LyricTimerOnElapsed;
@@ -76,7 +78,14 @@ namespace CdgPlayer
                 processing = true;
                 try
                 {
-                    var picture = _cdgFile.RenderAtTime(_stopWatch.ElapsedMilliseconds + _currentTime);
+                    var renderTime = _stopWatch.ElapsedMilliseconds + _currentTime;
+                    if(renderTime < _lastRenderTime)
+                    {
+                        return;
+                    }
+                    var picture = _cdgFile.RenderAtTime(renderTime);
+                    _lastRenderTime = renderTime;
+
                     if (picture == null)
                     {
                         return;
@@ -117,30 +126,7 @@ namespace CdgPlayer
             vlcPlayer.Play();
         }
 
-        private void vlcPlayer_Playing(object sender, VlcMediaPlayerPlayingEventArgs e)
-        {
-            _stopWatch.Restart();
-            _lyricTimer.Start();
-        }
-
-        private void vlcPlayer_TimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
-        {
-            _stopWatch.Restart();
-            _currentTime = e.NewTime;
-        }
-
-        private void KaraokeVideoPlayer_ParentChanged(object sender, EventArgs e)
-        {
-            if (FindForm() != null)
-            {
-                _overlayForm = new KaraokeVideoOverlay(this);
-            }
-        }
-
-        private void vlcPlayer_VlcLibDirectoryNeeded(object sender, VlcLibDirectoryNeededEventArgs e)
-        {
-            e.VlcLibDirectory = new DirectoryInfo(@"lib\vlc\");
-        }
+        
 
 
         public void ToggleFullScreen()
@@ -155,11 +141,11 @@ namespace CdgPlayer
                 };
                 vlcPlayer.Dock = DockStyle.Fill;
                 fullScreenForm.Controls.Add(vlcPlayer);
-
                 fullScreenForm.Show(this);
                 _overlayForm.WindowState = FormWindowState.Maximized;
 
                 _fullscreen = true;
+                Cursor.Hide();
             }
             else
             {
@@ -170,7 +156,21 @@ namespace CdgPlayer
                     parentForm.Close();
                     _overlayForm.WindowState = FormWindowState.Normal;
                     _fullscreen = false;
+                    parentForm.Focus();
+                    Cursor.Show();
                 }
+            }
+        }
+
+        public void TogglePause()
+        {
+            if (vlcPlayer.IsPlaying)
+            {
+                vlcPlayer.Pause();
+            }
+            else
+            {
+                vlcPlayer.Play();
             }
         }
 
@@ -187,10 +187,53 @@ namespace CdgPlayer
             }
         }
 
+        private void KaraokeVideoPlayer_ParentChanged(object sender, EventArgs e)
+        {
+            if (FindForm() != null)
+            {
+                _overlayForm = new KaraokeVideoOverlay(this);
+            }
+        }
+
+        private void vlcPlayer_VlcLibDirectoryNeeded(object sender, VlcLibDirectoryNeededEventArgs e)
+        {
+            e.VlcLibDirectory = new DirectoryInfo(@"lib\vlc\");
+        }
+
+        private void vlcPlayer_Playing(object sender, VlcMediaPlayerPlayingEventArgs e)
+        {
+            _stopWatch.Start();
+            _lyricTimer.Start();
+        }
+
+        private void vlcPlayer_TimeChanged(object sender, VlcMediaPlayerTimeChangedEventArgs e)
+        {
+            //vlcPlayer.Audio.Volume = 50;
+            _stopWatch.Restart();
+            _currentTime = e.NewTime;
+        }
+
+        private void vlcPlayer_Paused(object sender, VlcMediaPlayerPausedEventArgs e)
+        {
+            _lyricTimer.Stop();
+            _stopWatch.Stop();
+        }
+
         private void vlcPlayer_EndReached(object sender, VlcMediaPlayerEndReachedEventArgs e)
         {
+            _lyricTimer.Stop();
+            _lastRenderTime = -1;
+            _currentTime = 0;
             _stopWatch.Reset();
             OnSongFinished();
+        }
+
+        private void vlcPlayer_MediaChanged(object sender, VlcMediaPlayerMediaChangedEventArgs e)
+        {
+            _lyricTimer.Stop();
+            _lastRenderTime = -1;
+            _currentTime = 0;
+            _stopWatch.Reset();
         }
     }
 }
