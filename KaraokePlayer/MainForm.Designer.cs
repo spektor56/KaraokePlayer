@@ -34,6 +34,7 @@ namespace KaraokePlayer
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnPlay = new MaterialSkin.Controls.MaterialRaisedButton();
+            this.btnPause = new MaterialSkin.Controls.MaterialRaisedButton();
             this.btnBrowse = new MaterialSkin.Controls.MaterialRaisedButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -51,7 +52,6 @@ namespace KaraokePlayer
             this.browseDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.lblSongs = new System.Windows.Forms.Label();
             this.lblQueue = new System.Windows.Forms.Label();
-            this.btnPause = new MaterialSkin.Controls.MaterialRaisedButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -118,6 +118,23 @@ namespace KaraokePlayer
             this.btnPlay.Click += new System.EventHandler(this.materialRaisedButton1_Click);
             this.btnPlay.ChangeUICues += new System.Windows.Forms.UICuesEventHandler(this.btnPlay_ChangeUICues);
             // 
+            // btnPause
+            // 
+            this.btnPause.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPause.AutoSize = true;
+            this.btnPause.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.btnPause.Depth = 0;
+            this.btnPause.Icon = null;
+            this.btnPause.Location = new System.Drawing.Point(1119, 3);
+            this.btnPause.MouseState = MaterialSkin.MouseState.HOVER;
+            this.btnPause.Name = "btnPause";
+            this.btnPause.Primary = true;
+            this.btnPause.Size = new System.Drawing.Size(64, 36);
+            this.btnPause.TabIndex = 3;
+            this.btnPause.Text = "Pause";
+            this.btnPause.UseVisualStyleBackColor = true;
+            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
+            // 
             // btnBrowse
             // 
             this.btnBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -179,11 +196,6 @@ namespace KaraokePlayer
             this.mlbSongList.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
             this.mlbSongList.Font = new System.Drawing.Font("Roboto", 24F);
             this.mlbSongList.FormattingEnabled = true;
-            this.mlbSongList.Items.AddRange(new object[] {
-            "1",
-            "2",
-            "3",
-            "4"});
             this.mlbSongList.Location = new System.Drawing.Point(3, 32);
             this.mlbSongList.MouseLocation = new System.Drawing.Point(-1, -1);
             this.mlbSongList.MouseState = MaterialSkin.MouseState.HOVER;
@@ -274,11 +286,6 @@ namespace KaraokePlayer
             this.mlbQueue.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
             this.mlbQueue.Font = new System.Drawing.Font("Roboto", 24F);
             this.mlbQueue.FormattingEnabled = true;
-            this.mlbQueue.Items.AddRange(new object[] {
-            "1",
-            "2",
-            "3",
-            "4"});
             this.mlbQueue.Location = new System.Drawing.Point(0, 0);
             this.mlbQueue.MouseLocation = new System.Drawing.Point(-1, -1);
             this.mlbQueue.MouseState = MaterialSkin.MouseState.HOVER;
@@ -328,9 +335,9 @@ namespace KaraokePlayer
             this.lblSongs.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSongs.Location = new System.Drawing.Point(14, 71);
             this.lblSongs.Name = "lblSongs";
-            this.lblSongs.Size = new System.Drawing.Size(52, 21);
+            this.lblSongs.Size = new System.Drawing.Size(53, 21);
             this.lblSongs.TabIndex = 6;
-            this.lblSongs.Text = "label1";
+            this.lblSongs.Text = "Songs";
             // 
             // lblQueue
             // 
@@ -341,23 +348,6 @@ namespace KaraokePlayer
             this.lblQueue.Size = new System.Drawing.Size(96, 21);
             this.lblQueue.TabIndex = 7;
             this.lblQueue.Text = "Song Queue";
-            // 
-            // btnPause
-            // 
-            this.btnPause.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPause.AutoSize = true;
-            this.btnPause.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.btnPause.Depth = 0;
-            this.btnPause.Icon = null;
-            this.btnPause.Location = new System.Drawing.Point(1119, 3);
-            this.btnPause.MouseState = MaterialSkin.MouseState.HOVER;
-            this.btnPause.Name = "btnPause";
-            this.btnPause.Primary = true;
-            this.btnPause.Size = new System.Drawing.Size(64, 36);
-            this.btnPause.TabIndex = 3;
-            this.btnPause.Text = "Pause";
-            this.btnPause.UseVisualStyleBackColor = true;
-            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
             // 
             // MainForm
             // 

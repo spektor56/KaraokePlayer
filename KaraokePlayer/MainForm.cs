@@ -97,6 +97,11 @@ namespace KaraokePlayer
 
         private async void materialSingleLineTextField1_TextChanged(object sender, EventArgs e)
         {
+            if (mlbSongList.DataSource == null)
+            {
+                return;
+            }
+
             var text = materialSingleLineTextField1.Text;
             await Task.Delay(1000);
             
@@ -149,15 +154,21 @@ namespace KaraokePlayer
                     //karaokeVideoPlayer1.ToggleFullScreen();
                 }
             };
-            var di = new DirectoryInfo(browseDialog.SelectedPath);
-            _fileList = di.GetFiles("*.cdg", SearchOption.AllDirectories).GroupBy(file => file.Name.ToUpper()).Select(file => file.FirstOrDefault()).OrderBy(file => file.Name).ToList();
-            mlbSongList.DataSource = _fileList;
             mlbSongList.DisplayMember = "Name";
-            mlbQueue.DataSource = _queue;
             mlbQueue.DisplayMember = "Name";
 
-            lblSongs.Text = string.Format("({0:N0} / {1:N0}) Songs Displayed",
-                ((List<FileInfo>)mlbSongList.DataSource).Count, _fileList.Count);
+            if (Directory.Exists(browseDialog.SelectedPath))
+            {
+                var di = new DirectoryInfo(browseDialog.SelectedPath);
+                _fileList = di.GetFiles("*.cdg", SearchOption.AllDirectories).GroupBy(file => file.Name.ToUpper())
+                    .Select(file => file.FirstOrDefault()).OrderBy(file => file.Name).ToList();
+                mlbSongList.DataSource = _fileList;
+                mlbQueue.DataSource = _queue;
+
+
+                lblSongs.Text = string.Format("({0:N0} / {1:N0}) Songs Displayed",
+                    ((List<FileInfo>) mlbSongList.DataSource).Count, _fileList.Count);
+            }
 
             string apiKey = System.Configuration.ConfigurationManager.AppSettings["ApiKey"];
             /*

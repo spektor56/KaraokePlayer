@@ -10,21 +10,18 @@ namespace CdgLib
 {
     public class Graphic
     {
-        
+        public const int FullWidth = 300;
+        public const int FullHeight = 216;
 
         private const int ColourTableSize = 16;
         private const int TileHeight = 12;
         private const int TileWidth = 6;
-        public const int FullWidth = 300;
-        public const int FullHeight = 216;
-
-        private readonly int[] _colourTable = new int[ColourTableSize];
 
         private readonly Packet[] _packets;
+        private readonly int[] _colourTable = new int[ColourTableSize];
         private readonly byte[,] _pixelColours = new byte[FullHeight, FullWidth];
 
         private int _borderColourIndex;
-
         private int _horizonalOffset;
         private int _startPosition;
         private int _verticalOffset;
